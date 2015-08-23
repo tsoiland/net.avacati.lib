@@ -3,4 +3,5 @@ rootProject.name = 'Lib'
 include 'Jetty'
 include 'Mvc'
 include 'AggregateRepository'
+include 'SerializingDataStore'
 
