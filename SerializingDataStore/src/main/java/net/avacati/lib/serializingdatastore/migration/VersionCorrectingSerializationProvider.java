@@ -1,9 +1,19 @@
-package net.avacati.lib.serializingdatastore;
+package net.avacati.lib.serializingdatastore.migration;
+
+import net.avacati.lib.serializingdatastore.SerializationProvider;
 
 import java.io.*;
 
-class SerializationHelpers {
-    static byte[] serializeObject(Object object) {
+class VersionCorrectingSerializationProvider implements SerializationProvider {
+    private Class latestClass;
+
+    VersionCorrectingSerializationProvider(Class latestClass) {
+
+        this.latestClass = latestClass;
+    }
+
+    @Override
+    public byte[] serializeObject(Object object) {
         try {
             try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
                  ObjectOutput out = new ObjectOutputStream(bos)) {
@@ -15,10 +25,11 @@ class SerializationHelpers {
         }
     }
 
-    static Object deserializeObject(byte[] bytes) {
+    @Override
+    public Object deserializeObject(byte[] bytes) {
         try {
             try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-                 ObjectInput in = new ObjectInputStream(bis)) {
+                 ObjectInput in = new VersionCorrectingObjectInputStream(bis, latestClass)) {
                 return in.readObject();
             }
         } catch (IOException | ClassNotFoundException e) {

@@ -15,10 +15,14 @@ public class SerializingDataStoreTests {
 
     @Before
     public void setUp() throws SQLException {
+        Connection connection = createH2Connection();
+        this.serializingDataStore = SerializingDataStoreFactory.createDataStore(connection, "test_table");
+    }
+
+    private Connection createH2Connection() throws SQLException {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL("jdbc:h2:mem:");
-        Connection connection = dataSource.getConnection();
-        this.serializingDataStore = new SerializingDataStore<>(new SqlByteDataStore("test_table", connection));
+        return dataSource.getConnection();
     }
 
     @Test
