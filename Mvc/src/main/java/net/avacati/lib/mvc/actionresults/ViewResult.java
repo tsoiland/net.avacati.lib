@@ -1,15 +1,18 @@
 package net.avacati.lib.mvc.actionresults;
 
+import net.avacati.lib.mvc.AbstractAction;
 import net.avacati.lib.mvc.Route;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 public abstract class ViewResult implements ActionResult {
     @Override
     public void createResult(Route route, HttpServletResponse response) throws IOException {
+        final String renderedOutput = this.wrapRender(route.getMenuActions());
         response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(this.wrapRender(route));
+        response.getWriter().write(renderedOutput);
     }
 
     /**
@@ -17,7 +20,7 @@ public abstract class ViewResult implements ActionResult {
      *
      * @return unless overridden, the same as render.
      */
-    public String wrapRender(Route route) {
+    protected String wrapRender(List<AbstractAction> menuActions) {
         return this.render();
     }
 

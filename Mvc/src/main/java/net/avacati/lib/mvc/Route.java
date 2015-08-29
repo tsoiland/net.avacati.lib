@@ -27,6 +27,7 @@ public class Route {
                 .createResult(this, response);
 
         } catch (Throwable throwable) {
+            throwable.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, throwable.getMessage());
         }
     }
@@ -34,7 +35,7 @@ public class Route {
     public List<AbstractAction> getMenuActions() {
         return this.actions
                 .stream()
-                .filter(a -> a.isMenuItem())
+                .filter(AbstractAction::isMenuItem)
                 .collect(Collectors.toList());
     }
 }

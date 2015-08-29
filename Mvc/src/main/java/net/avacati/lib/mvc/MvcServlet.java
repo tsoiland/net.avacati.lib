@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MvcServlet extends HttpServlet {
+class MvcServlet extends HttpServlet {
     private Route route;
 
-    public MvcServlet(Route route) {
+    MvcServlet(Route route) {
         this.route = route;
     }
 

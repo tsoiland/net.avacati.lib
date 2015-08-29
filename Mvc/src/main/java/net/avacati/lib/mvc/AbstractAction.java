@@ -8,11 +8,11 @@ public abstract class AbstractAction {
     public String url;
     public String menu;
 
-    public AbstractAction(String url) {
+    protected AbstractAction(String url) {
         this.url = url;
     }
 
-    public AbstractAction(String url, String menu) {
+    protected AbstractAction(String url, String menu) {
         this.url = url;
         this.menu = menu;
     }

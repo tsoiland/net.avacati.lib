@@ -5,29 +5,29 @@ import net.avacati.lib.mvc.actionresults.ActionResult;
 import java.util.Map;
 
 public class ParameterAction<C> extends AbstractAction {
-    private PostActionReference<C> handle;
+    private PostActionReference<C> actionLambda;
     private Class<C> controllerClass;
 
-    public ParameterAction(String url, PostActionReference<C> handle, Class<C> controllerClass) {
+    public ParameterAction(String url, PostActionReference<C> actionLambda, Class<C> controllerClass) {
         super(url);
-        this.handle = handle;
+        this.actionLambda = actionLambda;
         this.controllerClass = controllerClass;
     }
 
-    public ParameterAction(String url, PostActionReference<C> handle, String menu, Class<C> controllerClass) {
+    public ParameterAction(String url, PostActionReference<C> actionLambda, String menu, Class<C> controllerClass) {
         super(url, menu);
-        this.handle = handle;
+        this.actionLambda = actionLambda;
         this.controllerClass = controllerClass;
     }
 
     public ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Throwable {
         C controller = controllerFactory.createController(this.controllerClass);
-        return this.handle.some(controller, postData);
+        return this.actionLambda.invokeOn(controller, postData);
     }
 
 
     @FunctionalInterface
     public interface PostActionReference<C> {
-        ActionResult some(C controller, Map<String, String> postData) throws Throwable;
+        ActionResult invokeOn(C controller, Map<String, String> postData) throws Throwable;
     }
 }
