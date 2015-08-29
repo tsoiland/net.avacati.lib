@@ -1,6 +1,8 @@
 package net.avacati.lib.serializingdatastore;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SerializingDataStore<D> implements DataStore<D> {
     private DataStore<byte[]> byteDataStore;
@@ -22,6 +24,16 @@ public class SerializingDataStore<D> implements DataStore<D> {
 
     public D get(UUID id) {
         final byte[] bytes = this.byteDataStore.get(id);
+        //noinspection unchecked
         return (D) SerializationHelpers.deserializeObject(bytes);
+    }
+
+    public List<D> getAll() {
+        final List<byte[]> bytes = this.byteDataStore.getAll();
+        return bytes
+                .stream()
+                .map(SerializationHelpers::deserializeObject)
+                .map(o -> (D) o)
+                .collect(Collectors.toList());
     }
 }

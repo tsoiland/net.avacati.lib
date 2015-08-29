@@ -1,8 +1,6 @@
 package net.avacati.lib.serializingdatastore;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.util.Base64;
 
 class SerializationHelpers {
     static byte[] serializeObject(Object object) {
