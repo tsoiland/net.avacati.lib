@@ -16,17 +16,21 @@ public class ServerAb {
         this.port = port;
     }
 
-    public void StartServer() throws Exception {
-        // Create server
-        Server server = new Server(port);
+    public void StartServer() {
+        try {
+            // Create server
+            Server server = new Server(port);
 
-        // Register servlet
-        ServletContextHandler handler = new ServletContextHandler();
-        handler.addServlet(new ServletHolder(servlet), "/");
-        server.setHandler(handler);
+            // Register servlet
+            ServletContextHandler handler = new ServletContextHandler();
+            handler.addServlet(new ServletHolder(servlet), "/");
+            server.setHandler(handler);
 
-        // Start
-        server.start();
-        server.join();
+            // Start
+            server.start();
+            server.join();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
