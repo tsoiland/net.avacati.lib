@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class MigratingSerializingDataStoreTests {
+public class MultipleVersionsMigratingSerializingDataStoreTests {
     private DataStore<TestDbo> serializingDataStore;
     private UUID uuid = UUID.fromString("0f050434-cee2-4d6e-8241-9ec4d2984207");
     private Connection connection;
@@ -48,6 +48,9 @@ public class MigratingSerializingDataStoreTests {
         return dataSource.getConnection();
     }
 
+    /**
+     * Test migration from V1 to V3
+     */
     @Test
     public void insertAndGet() throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchFieldException {
         // Load TestDboV1 through renaming classloader, so that it's name will be TestDbo.
@@ -68,44 +71,8 @@ public class MigratingSerializingDataStoreTests {
         final TestDbo testDbo = this.serializingDataStore.get(uuid);
 
         // Assert
-        Assert.assertEquals(uuid.toString(), testDbo.id);
-        Assert.assertEquals("foobar", testDbo.string);
-    }
-
-    @Test
-    public void shouldNotMistakinglyAddVersionToCurrentDbo() {
-        // Arrange
-        UUID uuid = UUID.randomUUID();
-        TestDbo testDbo = new TestDbo("idfoo", "foobar");
-
-        // Act
-        this.serializingDataStore.insert(uuid, testDbo);
-        final TestDbo testDbo1 = this.serializingDataStore.get(uuid);
-
-        // Assert
-        Assert.assertEquals(testDbo.id, testDbo1.id);
-        Assert.assertEquals(testDbo.string, testDbo1.string);
-    }
-
-    public static class TestDbo implements Serializable {
-        private static final long serialVersionUID = 2;
-        public String id;
-        public String string;
-
-        public TestDbo(String id, String string) {
-            this.id = id;
-            this.string = string;
-        }
-    }
-
-    public static class TestDboMigrations extends Migrator {
-        public TestDboMigrations() {
-            super.add(this::migrate, TestDboV1.class, TestDbo.class);
-        }
-
-        TestDbo migrate(TestDboV1 v1) {
-            return new TestDbo(v1.id.toString(), v1.string);
-        }
+        Assert.assertEquals(36L, testDbo.id);
+        Assert.assertEquals("foobarv3", testDbo.string);
     }
 
     public static class TestDboV1 implements Serializable {
@@ -119,6 +86,49 @@ public class MigratingSerializingDataStoreTests {
         public TestDboV1(UUID id, String string) {
             this.id = id;
             this.string = string;
+        }
+    }
+
+    public static class TestDboV2 implements Serializable {
+        private static final long serialVersionUID = 2;
+        public String id;
+        public String string;
+
+        public TestDboV2() {
+        }
+
+        public TestDboV2(String id, String string) {
+            this.id = id;
+            this.string = string;
+        }
+    }
+
+    public static class TestDbo implements Serializable {
+        private static final long serialVersionUID = 3;
+        public long id;
+        public String string;
+
+        public TestDbo() {
+        }
+
+        public TestDbo(long id, String string) {
+            this.id = id;
+            this.string = string;
+        }
+    }
+
+    public static class TestDboMigrations extends Migrator {
+        public TestDboMigrations() {
+            super.add(this::migrate, TestDboV1.class, TestDboV2.class);
+            super.add(this::migrate, TestDboV2.class, TestDbo.class);
+        }
+
+        TestDboV2 migrate(TestDboV1 v1) {
+            return new TestDboV2(v1.id.toString(), v1.string);
+        }
+
+        TestDbo migrate(TestDboV2 v2) {
+            return new TestDbo(v2.id.length(), v2.string + "v3");
         }
     }
 }

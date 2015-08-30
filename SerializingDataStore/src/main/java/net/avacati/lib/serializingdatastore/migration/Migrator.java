@@ -1,7 +1,6 @@
 package net.avacati.lib.serializingdatastore.migration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 public class Migrator {
@@ -12,14 +11,64 @@ public class Migrator {
         this.list.add(migration);
     }
 
-    Object migrate(Object value, Class v2Class) {
-        final Migration v1ToV2Migration = list
+    Object migrate(Object v1Object, Class v2Class) {
+        MigrationPath migrationPath = new MigrationPath(v1Object.getClass(), v2Class);
+
+        do {
+            Migration nextStep = findMigrationFromStepToAnyWhere(migrationPath.latestStep());
+            migrationPath.addMigrationStep(nextStep);
+        } while (!migrationPath.isComplete());
+
+
+        return migrationPath.runThroughEntirePath(v1Object);
+    }
+
+    private class MigrationPath {
+        private Deque<Migration> migrationPath = new ArrayDeque<>();
+        private Class fromClass;
+        private Class toClass;
+
+        private MigrationPath(Class fromClass, Class toClass) {
+            this.fromClass = fromClass;
+            this.toClass = toClass;
+        }
+
+        public void addMigrationStep(Migration migration) {
+            if(!migration.v1Class.isAssignableFrom(this.latestStep())) {
+                throw new RuntimeException("Migration cannot be added to path because it is not linked with tip of the current path.");
+            }
+
+            this.migrationPath.add(migration);
+        }
+
+        public Class latestStep() {
+            return migrationPath.isEmpty() ? fromClass : migrationPath.peekLast().v2Class;
+        }
+
+        public boolean isComplete() {
+            return this.migrationPath.peekLast().v2Class.isAssignableFrom(this.toClass);
+        }
+
+        public Object runThroughEntirePath(Object firstVersion) {
+            Object currentVersion = firstVersion;
+            for(Migration migration : this.migrationPath) {
+                currentVersion = migration.migrate(currentVersion);
+            }
+
+            if(!currentVersion.getClass().isAssignableFrom(this.toClass)) {
+                throw new RuntimeException("Ran the whole migration path, but current object is still not target version.");
+            }
+
+            return currentVersion;
+        }
+    }
+
+    private Migration findMigrationFromStepToAnyWhere(Class value) {
+        return list
                 .stream()
-                .filter(migration -> migration.match(value.getClass(), v2Class))
+                .filter(migration -> migration.canMigrateFrom(value))
                 .findFirst()
                 .get();
-
-        return v1ToV2Migration.migrate(value);
     }
 
     private static class Migration {
@@ -33,12 +82,12 @@ public class Migrator {
             this.v2Class = v2Class;
         }
 
-        private boolean match(Class v1, Class v2) {
-            return this.v1Class.isAssignableFrom(v1) && this.v2Class.isAssignableFrom(v2);
-        }
-
         private Object migrate(Object v1) {
             return function.apply(v1);
+        }
+
+        public boolean canMigrateFrom(Class v1) {
+            return this.v1Class.isAssignableFrom(v1);
         }
     }
 }
