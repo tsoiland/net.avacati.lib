@@ -19,6 +19,10 @@ import java.util.Map;
 class ClassNameSubstitutingClassLoader extends ClassLoader {
     private Map<String, String> mapFromClassNameToClassName = new HashMap<>();
 
+    public ClassNameSubstitutingClassLoader() {
+        super(null);
+    }
+
     void mapClassNameFromTo(String from, String to) {
         this.mapFromClassNameToClassName.put(from, to);
     }
@@ -37,7 +41,8 @@ class ClassNameSubstitutingClassLoader extends ClassLoader {
         String newName = this.mapFromClassNameToClassName.get(realName);
 
         // Converts an array of bytes into an instance of class Class.
-        return defineClass(newName, remappedBytecode, 0, remappedBytecode.length);
+        final Class<?> aClass = defineClass(newName, remappedBytecode, 0, remappedBytecode.length);
+        return aClass;
     }
 
     private byte[] readIntoClassWithFakeName(String realClassName) {

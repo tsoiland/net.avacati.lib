@@ -5,24 +5,32 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Field;
+import java.util.Map;
 
+/**
+ * Deserializes objects, but potentially into a different class than was originally used for serialization.
+ * <li>Use the same class if the serialVersionUID matches.
+ * <li>Delegate to {@link ObjectInputStream} if it's not one of the configured (in constructor) classes.
+ * <li>If it's one of the configured classes, but not the most recent serialVersionUID, use convention to find the snapshot version of that class,
+ * and use that class when loading. The classes named as snapshots should be exactly like that class <i>actually</i> was at that serialVersionUID.
+ */
 class VersionCorrectingObjectInputStream extends ObjectInputStream {
-    private final Class latestClass;
+    private Map<String, Class> classesToCheckForMigration;
 
-    VersionCorrectingObjectInputStream(InputStream in, Class latestClass) throws IOException {
+    VersionCorrectingObjectInputStream(InputStream in, Map<String, Class> classesToCheckForMigration) throws IOException {
         super(in);
-        this.latestClass = latestClass;
+        this.classesToCheckForMigration = classesToCheckForMigration;
     }
 
     @Override
     protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
         // If it's not our class, let super handle it. This will be all the types our class references, like String, UUID, etc.
-        if(!desc.getName().equals(latestClass.getName())){
+        if (!this.classesToCheckForMigration.containsKey(desc.getName())) {
             return super.resolveClass(desc);
         }
 
         // If it is the latest version, no need to modify, just let super handle it.
-        if(desc.getSerialVersionUID()  == ObjectStreamClass.lookup(this.latestClass).getSerialVersionUID()) {
+        if (desc.getSerialVersionUID() == ObjectStreamClass.lookup(this.classesToCheckForMigration.get(desc.getName())).getSerialVersionUID()) {
             return super.resolveClass(desc);
         }
 

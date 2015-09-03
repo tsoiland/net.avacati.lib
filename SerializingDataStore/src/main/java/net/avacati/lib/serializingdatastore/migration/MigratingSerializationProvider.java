@@ -7,12 +7,10 @@ import net.avacati.lib.serializingdatastore.SerializationProvider;
  */
 class MigratingSerializationProvider implements SerializationProvider {
     private Migrator migrator;
-    private Class latestClass;
     private VersionCorrectingSerializationProvider inner;
 
-    MigratingSerializationProvider(Migrator migrator, Class latestClass, VersionCorrectingSerializationProvider inner) {
+    MigratingSerializationProvider(Migrator migrator, VersionCorrectingSerializationProvider inner) {
         this.migrator = migrator;
-        this.latestClass = latestClass;
         this.inner = inner;
     }
 
@@ -26,12 +24,7 @@ class MigratingSerializationProvider implements SerializationProvider {
         // Deserialize to the accurate version (the old version)
         Object object = this.inner.deserializeObject(bytes);
 
-        // Check if it is the latest version
-        if (object.getClass().isAssignableFrom(this.latestClass)) {
-            return object;
-        }
-
         // If not migrate to latest version
-        return this.migrator.migrate(object, latestClass);
+        return this.migrator.migrate(object);
     }
 }

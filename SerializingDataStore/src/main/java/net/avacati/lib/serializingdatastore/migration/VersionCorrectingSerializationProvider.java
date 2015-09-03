@@ -3,13 +3,14 @@ package net.avacati.lib.serializingdatastore.migration;
 import net.avacati.lib.serializingdatastore.SerializationProvider;
 
 import java.io.*;
+import java.util.Map;
 
 class VersionCorrectingSerializationProvider implements SerializationProvider {
-    private Class latestClass;
+    private Map<String, Class> latestVersionOfAllClassesToMigrate;
 
-    VersionCorrectingSerializationProvider(Class latestClass) {
+    VersionCorrectingSerializationProvider(Map<String, Class> latestVersionOfAllClassesToMigrate) {
 
-        this.latestClass = latestClass;
+        this.latestVersionOfAllClassesToMigrate = latestVersionOfAllClassesToMigrate;
     }
 
     @Override
@@ -29,7 +30,7 @@ class VersionCorrectingSerializationProvider implements SerializationProvider {
     public Object deserializeObject(byte[] bytes) {
         try {
             try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-                 ObjectInput in = new VersionCorrectingObjectInputStream(bis, latestClass)) {
+                 ObjectInput in = new VersionCorrectingObjectInputStream(bis, latestVersionOfAllClassesToMigrate)) {
                 return in.readObject();
             }
         } catch (IOException | ClassNotFoundException e) {
