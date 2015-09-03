@@ -1,0 +1,26 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+version = '0.0'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "net.avacati.lib"
+            artifactId = "async"
+            version = "0.0.1"
+            from components.java
+        }
+    }
+}

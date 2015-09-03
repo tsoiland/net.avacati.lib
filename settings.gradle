@@ -5,3 +5,5 @@ include 'Mvc'
 include 'AggregateRepository'
 include 'SerializingDataStore'
 
+include 'Async'
+
