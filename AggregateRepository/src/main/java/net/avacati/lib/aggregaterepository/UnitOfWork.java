@@ -1,12 +1,15 @@
 package net.avacati.lib.aggregaterepository;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Supplier;
 
-public class UnitOfWork<E extends Aggregate<D>, D> {
+public class UnitOfWork<D> {
     private DataStore<D> dataStore;
-    private List<E> insertsDirty;
-    private List<E> maybeDirty;
+    private List<PieceOfWork<D>> insertsDirty;
+    private List<PieceOfWork<D>> maybeDirty;
 
     public UnitOfWork(DataStore<D> dataStore) {
         this.dataStore = dataStore;
@@ -14,12 +17,12 @@ public class UnitOfWork<E extends Aggregate<D>, D> {
         this.maybeDirty = new ArrayList<>();
     }
 
-    public void insert(E entity) {
-        this.insertsDirty.add(entity);
+    public void insert(UUID id, D dbo) {
+        this.insertsDirty.add(new PieceOfWork<>(id, () -> dbo));
     }
 
-    public void maybeUpdate(E entity) {
-        this.maybeDirty.add(entity);
+    public void maybeUpdate(UUID id, Supplier<D> dbo) {
+        this.maybeDirty.add(new PieceOfWork<>(id, dbo));
     }
 
     public void save() {
@@ -36,5 +39,25 @@ public class UnitOfWork<E extends Aggregate<D>, D> {
         this.maybeDirty.clear();
     }
 
+    /**
+     * One single entity that should be changed.
+     */
+    private static class PieceOfWork<E> implements Serializable {
+        private UUID id;
+        private Supplier<E> dbo;
+
+        private PieceOfWork(UUID id, Supplier<E> dbo) {
+            this.id = id;
+            this.dbo = dbo;
+        }
+
+        public UUID getId() {
+            return id;
+        }
+
+        public E getDbo() {
+            return dbo.get();
+        }
+    }
 }
 

@@ -1,6 +1,7 @@
 package net.avacati.lib.aggregaterepository;
 
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * Generic repository for entities that
@@ -11,25 +12,25 @@ import java.util.UUID;
  * @param <A> the entity type we're storing
  * @param <Dbo> the corresponding dbo type
  */
-public class Repository<A extends Aggregate<Dbo>, Dbo>{
+public class Repository<A , Dbo>{
     private DataStore<Dbo> innerRepo;
-    private UnitOfWork<A, Dbo> unitOfWork;
-    private Aggregate.AggregateFactory<A, Dbo> factory;
+    private UnitOfWork<Dbo> unitOfWork;
+    private AggregateFactory<A, Dbo> factory;
 
-    public Repository(DataStore<Dbo> innerRepo, UnitOfWork<A, Dbo> unitOfWork, Aggregate.AggregateFactory<A, Dbo> factory) {
+    public Repository(DataStore<Dbo> innerRepo, UnitOfWork<Dbo> unitOfWork, AggregateFactory<A, Dbo> factory) {
         this.innerRepo = innerRepo;
         this.unitOfWork = unitOfWork;
         this.factory = factory;
     }
 
-    public void add(A order) {
-        this.unitOfWork.insert(order);
+    public void add(UUID id, Dbo dbo) {
+        this.unitOfWork.insert(id, dbo);
     }
 
-    public A get(UUID id) {
+    public A get(UUID id, Function<A,Dbo> getDbo) {
         Dbo dbo = this.innerRepo.get(id);
         A order = this.factory.createFromDbo(dbo);
-        this.unitOfWork.maybeUpdate(order);
+        this.unitOfWork.maybeUpdate(id, () -> getDbo.apply(order));
         return order;
     }
 }
