@@ -20,7 +20,7 @@ public class Action<C> extends AbstractAction {
         this.controllerClass = controllerClass;
     }
 
-    public ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Throwable {
+    public ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Exception {
         C controller = controllerFactory.createController(this.controllerClass);
         return this.actionLambda.invokeOn(controller);
     }

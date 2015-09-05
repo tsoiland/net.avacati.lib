@@ -20,7 +20,7 @@ public class ParameterAction<C> extends AbstractAction {
         this.controllerClass = controllerClass;
     }
 
-    public ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Throwable {
+    public ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Exception {
         C controller = controllerFactory.createController(this.controllerClass);
         return this.actionLambda.invokeOn(controller, postData);
     }
@@ -28,6 +28,6 @@ public class ParameterAction<C> extends AbstractAction {
 
     @FunctionalInterface
     public interface PostActionReference<C> {
-        ActionResult invokeOn(C controller, Map<String, String> postData) throws Throwable;
+        ActionResult invokeOn(C controller, Map<String, String> postData) throws Exception;
     }
 }

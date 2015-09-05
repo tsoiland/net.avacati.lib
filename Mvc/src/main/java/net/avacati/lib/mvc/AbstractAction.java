@@ -21,6 +21,6 @@ public abstract class AbstractAction {
         return this.menu != null;
     }
 
-    public abstract ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Throwable;
+    public abstract ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Exception;
 }
 

@@ -14,7 +14,7 @@ public class FileAction extends AbstractAction {
     }
 
     @Override
-    public ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Throwable {
+    public ActionResult performAction(Map<String, String> postData, ControllerFactory controllerFactory) throws Exception {
         return new FileResult(this.filename);
     }
 }

@@ -49,7 +49,11 @@ class SqlByteDataStore implements DataStore<byte[]> {
             preparedStatement.setString(1, id.toString());
             final ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            return resultSet.getBytes("bytes");
+            try {
+                return resultSet.getBytes("bytes");
+            } catch(SQLException e) {
+                throw new EntityCouldNotBeFoundException(id, "Bytes for entity with id: " + id + " could not be found.", e);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -80,6 +84,19 @@ class SqlByteDataStore implements DataStore<byte[]> {
             statement.execute(sql);
         } catch (SQLException e) {
             throw new RuntimeException("sql exception", e);
+        }
+    }
+
+    private static class EntityCouldNotBeFoundException extends RuntimeException {
+        private final UUID id;
+
+        public EntityCouldNotBeFoundException(UUID id, String s, SQLException e) {
+            super(s, e);
+            this.id = id;
+        }
+
+        public UUID getId() {
+            return id;
         }
     }
 }
