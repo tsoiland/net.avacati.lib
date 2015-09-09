@@ -1,6 +1,6 @@
 package net.avacati.lib.serializingdatastore.migration;
 
-import net.avacati.lib.serializingdatastore.DataStore;
+import net.avacati.lib.aggregaterepository.DataStore;
 import net.avacati.lib.serializingdatastore.SerializingDataStoreFactory;
 
 import java.sql.Connection;

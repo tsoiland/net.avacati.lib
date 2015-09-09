@@ -1,5 +1,6 @@
 package net.avacati.lib.serializingdatastore;
 
+import net.avacati.lib.aggregaterepository.DataStore;
 import net.avacati.lib.serializingdatastore.domain.*;
 import net.avacati.lib.serializingdatastore.migration.MigratingSerializingDataStoreFactory;
 import net.avacati.lib.serializingdatastore.migration.Migrator;

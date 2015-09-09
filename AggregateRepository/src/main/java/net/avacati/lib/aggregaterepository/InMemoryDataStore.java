@@ -1,8 +1,6 @@
 package net.avacati.lib.aggregaterepository;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class InMemoryDataStore<D> implements DataStore<D> {
     private Map<UUID, D> dboList;
@@ -22,5 +20,10 @@ public class InMemoryDataStore<D> implements DataStore<D> {
 
     public D get(UUID id) {
         return this.dboList.get(id);
+    }
+
+    @Override
+    public Collection<D> getAll() {
+        return dboList.values();
     }
 }

@@ -1,5 +1,6 @@
 package net.avacati.lib.aggregaterepository;
 
+import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -32,6 +33,10 @@ public class Repository<A , Dbo>{
         A order = this.factory.createFromDbo(dbo);
         this.unitOfWork.maybeUpdate(id, () -> getDbo.apply(order));
         return order;
+    }
+
+    public Collection<Dbo> getAll() {
+        return this.innerRepo.getAll();
     }
 }
 

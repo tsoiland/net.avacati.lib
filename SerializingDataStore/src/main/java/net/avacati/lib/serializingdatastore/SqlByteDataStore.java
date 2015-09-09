@@ -1,7 +1,10 @@
 package net.avacati.lib.serializingdatastore;
 
+import net.avacati.lib.aggregaterepository.DataStore;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,7 +63,7 @@ class SqlByteDataStore implements DataStore<byte[]> {
     }
 
     @Override
-    public List<byte[]> getAll() {
+    public Collection<byte[]> getAll() {
         String sql = "SELECT bytes FROM " + tableName;
         try {
             final PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
