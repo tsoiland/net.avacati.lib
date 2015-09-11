@@ -1,9 +1,10 @@
-package net.avacati.lib.serializingdatastore;
+package net.avacati.lib.serializingdatastore.migration;
 
 import net.avacati.lib.aggregaterepository.DataStore;
-import net.avacati.lib.serializingdatastore.domain.*;
-import net.avacati.lib.serializingdatastore.migration.MigratingSerializingDataStoreFactory;
-import net.avacati.lib.serializingdatastore.migration.Migrator;
+import net.avacati.lib.serializingdatastore.PlainSerializationProvider;
+import net.avacati.lib.serializingdatastore.SerializingDataStore;
+import net.avacati.lib.serializingdatastore.SqlByteDataStore;
+import net.avacati.lib.serializingdatastore.migration.domain.*;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,8 +16,8 @@ import java.util.Iterator;
 import java.util.UUID;
 
 public class MigrationTests {
-    private DataStore<TestDbo> serializingDataStore;
     private Connection connection;
+    private DataStore<TestDbo> serializingDataStore;
     private UUID uuid = UUID.fromString("0f050434-cee2-4d6e-8241-9ec4d2984207");
 
     @Before
@@ -40,16 +41,6 @@ public class MigrationTests {
         return dataSource.getConnection();
     }
 
-    /**
-     * Because {@link SerializingDataStore} is typed, we can't save the V1 object we've created, even if we technically have hacked the
-     * classname to be correct. {@link SerializingDataStore#insert(UUID, Object)} is very simple, so we recreate it here and just insert
-     * into the same db connection.
-     */
-    private void insertWithoutTypeCheck(UUID uuid, Object o) {
-        final byte[] bytes = new PlainSerializationProvider().serializeObject(o);
-        new SqlByteDataStore("testtable", this.connection).insert(uuid, bytes);
-    }
-
     @Test
     public void insertV1GetLatest() throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchFieldException {
         // Arrange test dbo
@@ -69,27 +60,8 @@ public class MigrationTests {
         final TestDbo testDbo = this.serializingDataStore.get(uuid);
 
         // Assert
-        assertTTT(testDbo);
+        assertTestDboEqualsKnownValues(testDbo);
     }
-
-    private void assertTTT(TestDbo testDbo) {
-        Assert.assertEquals(uuid.toString(), testDbo.id);
-        Assert.assertEquals("foobar value", testDbo.foobar);
-        Assert.assertEquals(2, testDbo.subTestDbos.size());
-
-        final Iterator<SubTestDbo> iterator = testDbo.subTestDbos.iterator();
-
-        final SubTestDbo sub1 = iterator.next();
-        Assert.assertEquals(40, sub1.id);
-        Assert.assertEquals("fabricated substringsub1", sub1.substring);
-        Assert.assertEquals("new value", sub1.newField);
-
-        final SubTestDbo sub2 = iterator.next();
-        Assert.assertEquals(40, sub2.id);
-        Assert.assertEquals("fabricated substringsub2", sub2.substring);
-        Assert.assertEquals("new value", sub2.newField);
-    }
-
 
     @Test
     public void insertV3GetLatest() throws NoSuchFieldException, IllegalAccessException, InstantiationException, ClassNotFoundException {
@@ -120,6 +92,34 @@ public class MigrationTests {
         final TestDbo testDbo = this.serializingDataStore.get(uuid);
 
         // Assert
-        assertTTT(testDbo);
+        assertTestDboEqualsKnownValues(testDbo);
+    }
+
+    /**
+     * Because {@link SerializingDataStore} is typed, we can't save the V1 object we've created, even if we technically have hacked the
+     * classname to be correct. {@link SerializingDataStore#insert(UUID, Object)} is very simple, so we recreate it here and just insert
+     * into the same db connection.
+     */
+    private void insertWithoutTypeCheck(UUID uuid, Object o) {
+        final byte[] bytes = new PlainSerializationProvider().serializeObject(o);
+        new SqlByteDataStore("testtable", this.connection).insert(uuid, bytes);
+    }
+
+    private void assertTestDboEqualsKnownValues(TestDbo testDbo) {
+        Assert.assertEquals(uuid.toString(), testDbo.id);
+        Assert.assertEquals("foobar value", testDbo.foobar);
+        Assert.assertEquals(2, testDbo.subTestDbos.size());
+
+        final Iterator<SubTestDbo> iterator = testDbo.subTestDbos.iterator();
+
+        final SubTestDbo sub1 = iterator.next();
+        Assert.assertEquals(40, sub1.id);
+        Assert.assertEquals("fabricated substringsub1", sub1.substring);
+        Assert.assertEquals("new value", sub1.newField);
+
+        final SubTestDbo sub2 = iterator.next();
+        Assert.assertEquals(40, sub2.id);
+        Assert.assertEquals("fabricated substringsub2", sub2.substring);
+        Assert.assertEquals("new value", sub2.newField);
     }
 }

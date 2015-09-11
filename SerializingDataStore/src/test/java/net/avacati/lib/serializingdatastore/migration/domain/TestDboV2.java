@@ -1,4 +1,4 @@
-package net.avacati.lib.serializingdatastore.domain;
+package net.avacati.lib.serializingdatastore.migration.domain;
 
 import java.io.Serializable;
 

@@ -2,7 +2,7 @@ package net.avacati.lib.serializingdatastore;
 
 import java.io.*;
 
-class PlainSerializationProvider implements SerializationProvider {
+public class PlainSerializationProvider implements SerializationProvider {
     @Override
     public byte[] serializeObject(Object object) {
         try {

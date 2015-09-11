@@ -38,7 +38,7 @@ public class Repository<A, Dbo> {
                     "Duplicate key in Identity Map. Either added same id twice, or added id that was returned by get(). Id: " + id);
         }
         this.identityMap.put(id, aggregateEntity);
-        
+
         this.unitOfWork.insert(id, () -> this.dboFromAggregateEntity.apply(aggregateEntity));
     }
 

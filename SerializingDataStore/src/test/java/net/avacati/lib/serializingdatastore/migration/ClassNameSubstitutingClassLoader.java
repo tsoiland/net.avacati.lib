@@ -1,4 +1,4 @@
-package net.avacati.lib.serializingdatastore;
+package net.avacati.lib.serializingdatastore.migration;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;

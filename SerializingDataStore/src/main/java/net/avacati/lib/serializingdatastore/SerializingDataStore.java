@@ -29,8 +29,8 @@ public class SerializingDataStore<D> implements DataStore<D> {
 
     public D get(UUID id) {
         final byte[] bytes = this.byteDataStore.get(id);
-        // 
-        //noinspection unchecked 
+
+        //noinspection unchecked
         return (D) this.serializationProvider.deserializeObject(bytes);
     }
 

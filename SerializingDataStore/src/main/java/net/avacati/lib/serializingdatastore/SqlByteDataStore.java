@@ -8,11 +8,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-class SqlByteDataStore implements DataStore<byte[]> {
+public class SqlByteDataStore implements DataStore<byte[]> {
     private String tableName = "test_table";
     private java.sql.Connection connection;
 
-    SqlByteDataStore(String tableName, Connection connection) {
+    public SqlByteDataStore(String tableName, Connection connection) {
         this.tableName = tableName;
         this.connection = connection;
         this.doSql("CREATE TABLE IF NOT EXISTS " + tableName + " (id varchar(50), bytes BINARY)");

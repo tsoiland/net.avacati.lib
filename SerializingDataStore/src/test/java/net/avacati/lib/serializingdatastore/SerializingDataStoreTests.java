@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 public class SerializingDataStoreTests {
@@ -55,6 +56,25 @@ public class SerializingDataStoreTests {
         final TestDbo getDbo = this.serializingDataStore.get(id);
         Assert.assertEquals(updateDbo.id, getDbo.id);
         Assert.assertEquals(updateDbo.string, getDbo.string);
+    }
+
+    @Test
+    public void insertAndGetAll() throws SQLException {
+        // Arrange
+        UUID uuid = UUID.randomUUID();
+        UUID uuid2 = UUID.randomUUID();
+        TestDbo testDbo = new TestDbo(uuid, "foo");
+        TestDbo testDbo2 = new TestDbo(uuid, "bar");
+        serializingDataStore.insert(uuid, testDbo);
+        serializingDataStore.insert(uuid2, testDbo2);
+
+        // Act
+        final List<TestDbo> allDbos = this.serializingDataStore.getAll();
+
+        // Assert
+        Assert.assertEquals(2, allDbos.size());
+        Assert.assertEquals(testDbo.id, allDbos.get(0).id);
+        Assert.assertEquals(testDbo2.id, allDbos.get(1).id);
     }
 
     public static class TestDbo implements Serializable {
