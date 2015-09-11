@@ -1,9 +1,7 @@
 package net.avacati.lib.aggregaterepository;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class UnitOfWork<D> {
@@ -11,32 +9,34 @@ public class UnitOfWork<D> {
     private List<PieceOfWork<D>> insertsDirty;
     private List<PieceOfWork<D>> maybeDirty;
 
-    public UnitOfWork(DataStore<D> dataStore) {
+    UnitOfWork(DataStore<D> dataStore) {
         this.dataStore = dataStore;
         this.insertsDirty = new ArrayList<>();
         this.maybeDirty = new ArrayList<>();
     }
 
-    public void insert(UUID id, D dbo) {
-        this.insertsDirty.add(new PieceOfWork<>(id, () -> dbo));
+    void insert(UUID id, Supplier<D> dboSupplier) {
+        this.insertsDirty.add(new PieceOfWork<>(id, dboSupplier));
     }
 
-    public void maybeUpdate(UUID id, Supplier<D> dbo) {
-        this.maybeDirty.add(new PieceOfWork<>(id, dbo));
+    void maybeUpdate(UUID id, Supplier<D> dboSupplier) {
+        this.maybeDirty.add(new PieceOfWork<>(id, dboSupplier));
     }
 
     public void save() {
-        // Perform all inserts.
-        this.insertsDirty.forEach(entity -> this.dataStore.insert(entity.getId(), entity.getDbo()));
-        this.insertsDirty.clear();
-
         // Perform update on all entities that might have been changed.
         this.maybeDirty.forEach(
                 entity -> {
                     D oldDbo = this.dataStore.get(entity.getId());
                     this.dataStore.update(entity.getId(), entity.getDbo(), oldDbo);
             });
-        this.maybeDirty.clear();
+
+        // Perform all inserts.
+        this.insertsDirty.forEach(entity -> this.dataStore.insert(entity.getId(), entity.getDbo()));
+
+        // The inserted entities can still be modified, but they should _never_ be _inserted_ again.
+        this.maybeDirty.addAll(this.insertsDirty);
+        this.insertsDirty.clear();
     }
 
     /**
