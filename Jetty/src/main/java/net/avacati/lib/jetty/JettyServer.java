@@ -7,16 +7,16 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import javax.servlet.Servlet;
 
 
-public class ServerAb {
+public class JettyServer {
     private final Servlet servlet;
     private final int port;
 
-    public ServerAb(Servlet servlet, int port) {
+    public JettyServer(Servlet servlet, int port) {
         this.servlet = servlet;
         this.port = port;
     }
 
-    public void StartServer() {
+    public void startAndJoin() {
         try {
             // Create server
             Server server = new Server(port);
