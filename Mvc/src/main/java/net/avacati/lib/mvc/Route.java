@@ -4,18 +4,17 @@ import net.avacati.lib.mvc.actionresults.ActionResult;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Route {
-    private ArrayList<AbstractAction> actions;
+    private List<AbstractAction> actions;
     private ControllerFactory controllerFactory;
     private Optional<ErrorAction> defaultErrorAction;
 
-    public Route(ArrayList<AbstractAction> actions, ControllerFactory controllerFactory, Optional<ErrorAction> defaultErrorAction) {
+    public Route(List<AbstractAction> actions, ControllerFactory controllerFactory, Optional<ErrorAction> defaultErrorAction) {
         this.actions = actions;
         this.controllerFactory = controllerFactory;
         this.defaultErrorAction = defaultErrorAction;

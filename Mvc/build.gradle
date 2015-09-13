@@ -12,6 +12,7 @@ dependencies {
     compile 'net.avacati.lib:jetty:0.0.1'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile 'org.httpunit:httpunit:1.7.2'
 }
 
 apply plugin: 'maven-publish'
