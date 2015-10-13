@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DirectTableCreator {
+class DirectTableCreator {
     private Map<Class, TypeMapConfig> map;
 
     public DirectTableCreator(Map<Class, TypeMapConfig> map) {

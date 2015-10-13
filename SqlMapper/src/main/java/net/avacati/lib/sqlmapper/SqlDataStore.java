@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public class SqlDataStore<T> implements DataStore<T> {
+class SqlDataStore<T> implements DataStore<T> {
     private IndirectMapper indirectMapper;
     private SqlDoer sqlDoer;
     private DirectSelecter directSelecter;

@@ -29,4 +29,10 @@ publishing {
             }
         }
     }
+    repositories {
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+            url "http://valkyrie.saua.no:8081/artifactory/sqlmapper"
+        }
+    }
 }

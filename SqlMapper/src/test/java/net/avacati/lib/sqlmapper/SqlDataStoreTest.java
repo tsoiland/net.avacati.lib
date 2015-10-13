@@ -1,5 +1,6 @@
 package net.avacati.lib.sqlmapper;
 
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,16 +28,13 @@ public class SqlDataStoreTest {
         typemap.put(SubListItemTestDbo.class, TypeMapConfig.asSubDbo("sub_list_item_test_table", o -> ((SubListItemTestDbo) o).primaryKeyColumn.toString(), "primaryKeyColumn"));
 
         // Arrange schema creator
-        SqlDoerH2 sqlDoerH2 = SqlDoerH2.create();
-        final TableCreator tableCreator = new TableCreator(new IndirectTableCreator(typemap, new DirectTableCreator(typemap)), sqlDoerH2);
-        tableCreator.createTableFor(TestDbo.class);
 
         // Arrange SUT
-        SqlDataStore<TestDbo> sqlDataStore = new SqlDataStore<>(
-                new IndirectMapper(typemap, new DirectMapper(typemap)),
-                sqlDoerH2,
-                new DirectSelecter(typemap, sqlDoerH2),
-                TestDbo.class);
+        JdbcDataSource dataSource = new JdbcDataSource();
+        dataSource.setURL("jdbc:h2:mem:");
+        final SqlMapperFactory<TestDbo> sqlMapperFactory = new SqlMapperFactory<>(TestDbo.class, typemap, dataSource);
+        sqlMapperFactory.createSchema();
+        SqlDataStore<TestDbo> sqlDataStore = sqlMapperFactory.getSqlDataStore();
 
         // Arrange data
         // Arrange testDbo

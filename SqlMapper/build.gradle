@@ -9,11 +9,11 @@ repositories {
 }
 
 dependencies {
-    compile 'net.avacati.lib:aggregaterepository:0.0.1'
+    compile 'net.avacati.lib:aggregaterepository:0.0.2'
     compile group: 'com.h2database', name: 'h2', version: '1.4.+'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile 'net.avacati.lib:serializingdatastore:0.0.1'
+    testCompile 'net.avacati.lib:serializingdatastore:0.0.2'
 }
 
 
@@ -28,7 +28,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = "net.avacati.lib"
             artifactId = "sqlmapper"
-            version = "0.0.1"
+            version = "0.0.4"
             from components.java
             artifact sourceJar {
                 classifier = 'sources'

@@ -17,6 +17,10 @@ class SqlDoerH2 implements SqlDoer {
     public static SqlDoerH2 create() {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL("jdbc:h2:mem:");
+        return create(dataSource);
+    }
+
+    public static SqlDoerH2 create(JdbcDataSource dataSource) {
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
@@ -26,6 +30,7 @@ class SqlDoerH2 implements SqlDoer {
 
         return new SqlDoerH2(connection);
     }
+
     @Override
     public void doSql(String sql) {
         try {
