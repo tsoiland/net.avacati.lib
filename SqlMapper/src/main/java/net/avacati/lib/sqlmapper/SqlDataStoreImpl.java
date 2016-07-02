@@ -24,13 +24,13 @@ public class SqlDataStoreImpl implements SqlDataStore {
     @Override
     public void insert(Object dbo) {
         List<String> sqls = this.indirectInserter.createInsertSqlsForObjectTree(dbo);
-        sqls.stream().forEach(this.sqlDoer::doSql);
+        sqls.stream().forEach(this.sqlDoer::execute);
     }
 
     @Override
     public <T> void update(T newDbo, T oldDbo) {
         final List<String> updateSqlsForObjectTree = this.indirectUpdater.createUpdateSqlsForObjectTree(newDbo, oldDbo);
-        updateSqlsForObjectTree.stream().forEach(this.sqlDoer::doSql);
+        updateSqlsForObjectTree.stream().forEach(this.sqlDoer::execute);
     }
 
     @Override

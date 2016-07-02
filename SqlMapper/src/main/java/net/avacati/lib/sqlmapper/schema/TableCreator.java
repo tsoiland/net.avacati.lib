@@ -1,12 +1,12 @@
 package net.avacati.lib.sqlmapper.schema;
 
-import net.avacati.lib.sqlmapper.util.SqlDoerH2;
+import net.avacati.lib.sqlmapper.util.SqlDoer;
 
 public class TableCreator {
     private IndirectTableCreator indirectTableCreator;
-    private SqlDoerH2 sqlDoer;
+    private SqlDoer sqlDoer;
 
-    public TableCreator(IndirectTableCreator indirectTableCreator, SqlDoerH2 sqlDoer) {
+    public TableCreator(IndirectTableCreator indirectTableCreator, SqlDoer sqlDoer) {
         this.indirectTableCreator = indirectTableCreator;
         this.sqlDoer = sqlDoer;
     }
@@ -16,6 +16,6 @@ public class TableCreator {
                 .createCreateTableSqlsForClass(dboClass)
                 .stream()
 //                .peek(System.out::println)
-                .forEach(this.sqlDoer::doSql);
+                .forEach(this.sqlDoer::execute);
     }
 }

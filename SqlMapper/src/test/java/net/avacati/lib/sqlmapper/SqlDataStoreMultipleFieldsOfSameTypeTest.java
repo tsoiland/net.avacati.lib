@@ -1,19 +1,12 @@
 package net.avacati.lib.sqlmapper;
 
-import net.avacati.lib.sqlmapper.insert.DirectInserter;
-import net.avacati.lib.sqlmapper.insert.IndirectInserter;
-import net.avacati.lib.sqlmapper.schema.DirectTableCreator;
-import net.avacati.lib.sqlmapper.schema.IndirectTableCreator;
-import net.avacati.lib.sqlmapper.schema.TableCreator;
-import net.avacati.lib.sqlmapper.select.DirectSelecter;
-import net.avacati.lib.sqlmapper.update.DirectUpdater;
-import net.avacati.lib.sqlmapper.update.IndirectUpdater;
-import net.avacati.lib.sqlmapper.util.SqlDoerH2;
-import net.avacati.lib.sqlmapper.util.TypeMap;
+import net.avacati.lib.sqlmapper.util.H2ConnectionFactory;
 import net.avacati.lib.sqlmapper.util.TypeConfig.ErasedTypes;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,23 +29,13 @@ public class SqlDataStoreMultipleFieldsOfSameTypeTest {
         // - SubTestDbo
         typeMap.asSubDbo(SubTestDbo.class, "sub_test_table", o -> o.primaryKeyColumn.toString(), "primaryKeyColumn");
 
-        // Arrange db schema
-//        SqlDoerH2 sqlDoerH2 = SqlDoerH2.create();
-//        sqlDoerH2.doSql("CREATE TABLE test_table (uuidColumn varchar(36), data varchar(max), singleSubX varchar(36), singleSubY varchar(36))");
-//        sqlDoerH2.doSql("CREATE TABLE sub_test_table (primaryKeyColumn varchar(36), data varchar(max), testDbo_listsubz varchar(36), testDbo_listsubw varchar(36))");
-
-        // Arrange schema creator
-        SqlDoerH2 sqlDoerH2 = SqlDoerH2.create();
-        final TableCreator tableCreator = new TableCreator(new IndirectTableCreator(typeMap, new DirectTableCreator(typeMap)), sqlDoerH2);
-        tableCreator.createTableFor(TestDbo.class);
-
         // Arrange SUT
-        IndirectInserter indirectInserter = new IndirectInserter(typeMap, new DirectInserter(typeMap));
-        SqlDataStore sqlDataStore = new SqlDataStoreImpl(
-                indirectInserter,
-                sqlDoerH2,
-                new DirectSelecter(typeMap, sqlDoerH2),
-                new IndirectUpdater(typeMap, new DirectUpdater(typeMap), indirectInserter));
+        SqlDataStoreFactory sqlDataStoreFactory = new SqlDataStoreFactory(typeMap);
+        Connection connection = H2ConnectionFactory.getConnection();
+        SqlDataStore sqlDataStore = sqlDataStoreFactory.createSqlDataStore(connection);
+
+        // Arrange schema
+        sqlDataStoreFactory.createSchema(connection);
 
         // Arrange data
         // Arrange testDbo

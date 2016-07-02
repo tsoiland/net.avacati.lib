@@ -29,7 +29,7 @@ public class DirectSelecter {
         String sql = "SELECT * FROM " + typeConfig.getTableNameForDbo() + " WHERE " + typeConfig.getPrimaryKeyFieldName() + "='" + id + "'";
 
         // Execute query
-        ResultSet resultSet = this.sqlDoer.doSql2(sql);
+        ResultSet resultSet = this.sqlDoer.query(sql);
 
         // Map result set to dbos
         List<Dbo> dbos = this.mapResultSetToDbo(type, resultSet);
@@ -143,7 +143,7 @@ public class DirectSelecter {
         String queryForSubDbos = "SELECT * FROM " + tableName + " WHERE " + foreignKeyDbField.columnName + "='" + foreignKeyDbField.value + "'";
 
         // Execute query
-        ResultSet resultSet = this.sqlDoer.doSql2(queryForSubDbos);
+        ResultSet resultSet = this.sqlDoer.query(queryForSubDbos);
 
         // RECURSE on resultset
         List<SubDbo> subDbo = this.mapResultSetToDbo(subDboType, resultSet);

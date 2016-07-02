@@ -8,7 +8,7 @@ import net.avacati.lib.sqlmapper.schema.TableCreator;
 import net.avacati.lib.sqlmapper.select.DirectSelecter;
 import net.avacati.lib.sqlmapper.update.DirectUpdater;
 import net.avacati.lib.sqlmapper.update.IndirectUpdater;
-import net.avacati.lib.sqlmapper.util.SqlDoerH2;
+import net.avacati.lib.sqlmapper.util.SqlDoer;
 import net.avacati.lib.sqlmapper.util.TypeMap;
 
 import java.sql.Connection;
@@ -22,7 +22,7 @@ public class SqlDataStoreFactory {
 
     public SqlDataStore createSqlDataStore(Connection connection) {
         // SqlDoer
-        final SqlDoerH2 sqlDoer = new SqlDoerH2(connection);
+        final SqlDoer sqlDoer = new SqlDoer(connection);
 
         // Selecter
         final DirectSelecter directSelecter = new DirectSelecter(this.typeConfigMap, sqlDoer);
@@ -51,7 +51,7 @@ public class SqlDataStoreFactory {
         final TableCreator tableCreator = new TableCreator(
                 new IndirectTableCreator(this.typeConfigMap,
                         new DirectTableCreator(this.typeConfigMap)),
-                new SqlDoerH2(connection));
+                new SqlDoer(connection));
 
         // Create schema for all Root entites (creator will recurse)
         this.typeConfigMap.getRootDboClasses()
