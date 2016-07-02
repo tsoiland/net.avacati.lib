@@ -1,7 +1,7 @@
 package net.avacati.lib.sqlmapper;
 
 import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig.ErasedTypes;
+import net.avacati.lib.sqlmapper.util.TypeConfig.ErasedTypes;
 
 import java.util.ArrayList;
 import java.util.UUID;

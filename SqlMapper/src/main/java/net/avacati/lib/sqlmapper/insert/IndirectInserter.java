@@ -2,7 +2,7 @@ package net.avacati.lib.sqlmapper.insert;
 
 import net.avacati.lib.sqlmapper.util.DbField;
 import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
 import java.lang.reflect.Field;
@@ -64,21 +64,21 @@ public class IndirectInserter {
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.typeMap.get(type);
+        TypeConfig typeConfig = this.typeMap.get(type);
 
         // The value of our field can be processed in three ways:
         // - as a reference to a single object that should be processed as a dbo
         // - as a list of objects that should be processed as dbos.
         // - as neither (e.g. it is a String, int, Instant or UUID and has already been mapped by the
         //   direct mapper).
-        if (typeMapConfig.isDboThatMapsToItsOwnTable()) {
+        if (typeConfig.isDboThatMapsToItsOwnTable()) {
             // Get the raw value from field.
             Object subDbo = this.getFieldValueFromDbo(field, parentDbo);
 
             // Map it to it's own table.
             return this.createInsertSqlForSubDbo(subDbo);
 
-        } else if (typeMapConfig.shouldTreatAsList()) {
+        } else if (typeConfig.shouldTreatAsList()) {
             // Get the raw value from field.
             Object list = this.getFieldValueFromDbo(field, parentDbo);
 

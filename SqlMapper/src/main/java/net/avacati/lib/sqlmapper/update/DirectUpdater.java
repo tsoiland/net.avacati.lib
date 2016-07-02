@@ -2,7 +2,7 @@ package net.avacati.lib.sqlmapper.update;
 
 import net.avacati.lib.sqlmapper.util.DbField;
 import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
 import java.lang.reflect.Field;
@@ -42,11 +42,11 @@ public class DirectUpdater {
         }
 
         // Get typemapconfig
-        TypeMapConfig typeMapConfig = this.typeMap.get(newDbo.getClass());
+        TypeConfig typeConfig = this.typeMap.get(newDbo.getClass());
 
         // Find the primary key value for the WHERE clause in the update.
-        String id = typeMapConfig.getPrimaryKey(newDbo);
-        String id2 = typeMapConfig.getPrimaryKey(oldDbo);
+        String id = typeConfig.getPrimaryKey(newDbo);
+        String id2 = typeConfig.getPrimaryKey(oldDbo);
         if (!id.equals(id2)) {
             throw new IllegalStateException();
         }
@@ -54,9 +54,9 @@ public class DirectUpdater {
         // Render the sql
         String sql = String.format(
                 "UPDATE %s \nSET \n\t%s \nWHERE %s = '%s'",
-                typeMapConfig.getTableNameForDbo(),
+                typeConfig.getTableNameForDbo(),
                 collect,
-                typeMapConfig.getPrimaryKeyFieldName(),
+                typeConfig.getPrimaryKeyFieldName(),
                 id);
         return Optional.of(sql);
     }
@@ -71,16 +71,16 @@ public class DirectUpdater {
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.typeMap.get(type);
+        TypeConfig typeConfig = this.typeMap.get(type);
 
         // Should we map it directly?
-        if (typeMapConfig.shouldMapDirectlyToColumn()) {
+        if (typeConfig.shouldMapDirectlyToColumn()) {
             // Get the raw values from field.
             Object newFieldValue = this.getFieldValueFromDbo(field, newDbo);
             Object oldFieldValue = this.getFieldValueFromDbo(field, oldDbo);
 
             // Has the field changed?
-            if (!this.specialEquals(newFieldValue, oldFieldValue, typeMapConfig)) {
+            if (!this.specialEquals(newFieldValue, oldFieldValue, typeConfig)) {
                 // Start a new field
                 DbField dbField = new DbField();
 
@@ -88,7 +88,7 @@ public class DirectUpdater {
                 dbField.columnName = field.getName();
 
                 // Assign column value based on mapping function.
-                dbField.value = typeMapConfig.map(newFieldValue);
+                dbField.value = typeConfig.map(newFieldValue);
 
                 return Optional.of(dbField);
             }
@@ -101,12 +101,12 @@ public class DirectUpdater {
     /**
      * An equals method that checks the typemapconfig to see if equality is decided by the dbos id'field and not regular equals method.
      */
-    public boolean specialEquals(Object newFieldValue, Object oldFieldValue, TypeMapConfig typeMapConfig) {
-        if (typeMapConfig.shouldEqualDirectly()) {
+    public boolean specialEquals(Object newFieldValue, Object oldFieldValue, TypeConfig typeConfig) {
+        if (typeConfig.shouldEqualDirectly()) {
             // Do a regular equals
             return Objects.equals(newFieldValue, oldFieldValue);
 
-        } else if (typeMapConfig.shouldEqualUsingPK()) {
+        } else if (typeConfig.shouldEqualUsingPK()) {
             // Compare the primary key (identity) of the objects to determine equality (used for subdbos)
             try {
                 // If they are both null, or both the same instance, they are definitely equal.
@@ -123,7 +123,7 @@ public class DirectUpdater {
 
                 // Get the field for Id/PK
                 Class<?> dboClass = newFieldValue.getClass();
-                Field pkfield = dboClass.getField(typeMapConfig.getPrimaryKeyFieldName());
+                Field pkfield = dboClass.getField(typeConfig.getPrimaryKeyFieldName());
 
                 // Get Id from new and old
                 Object newId = pkfield.get(newFieldValue);

@@ -2,7 +2,7 @@ package net.avacati.lib.sqlmapper.insert;
 
 import net.avacati.lib.sqlmapper.util.DbField;
 import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
 import java.lang.reflect.Field;
@@ -62,10 +62,10 @@ public class DirectInserter {
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.typeMap.get(type);
+        TypeConfig typeConfig = this.typeMap.get(type);
 
         // Should we map it directly?
-        if (typeMapConfig.shouldMapDirectlyToColumn()) {
+        if (typeConfig.shouldMapDirectlyToColumn()) {
             // Start a new field
             DbField dbField = new DbField();
 
@@ -76,7 +76,7 @@ public class DirectInserter {
             Object fieldValue = this.getFieldValueFromDbo(field, dbo);
 
             // Assign column value based on mapping function.
-            dbField.value = typeMapConfig.map(fieldValue);
+            dbField.value = typeConfig.map(fieldValue);
 
             return Optional.of(dbField);
         }

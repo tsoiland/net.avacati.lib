@@ -10,7 +10,7 @@ import net.avacati.lib.sqlmapper.update.DirectUpdater;
 import net.avacati.lib.sqlmapper.update.IndirectUpdater;
 import net.avacati.lib.sqlmapper.util.SqlDoerH2;
 import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig.ErasedTypes;
+import net.avacati.lib.sqlmapper.util.TypeConfig.ErasedTypes;
 import org.junit.Assert;
 import org.junit.Test;
 

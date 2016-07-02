@@ -2,7 +2,7 @@ package net.avacati.lib.sqlmapper.update;
 
 import net.avacati.lib.sqlmapper.util.DbField;
 import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 import net.avacati.lib.sqlmapper.insert.IndirectInserter;
 
@@ -67,22 +67,22 @@ public class IndirectUpdater {
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.typeMap.get(type);
+        TypeConfig typeConfig = this.typeMap.get(type);
 
         // The value of our field can be processed in three ways:
         // - as a reference to a single object that should be processed as a dbo
         // - as a list of objects that should be processed as dbos.
         // - as neither (e.g. it is a String, int, Instant or UUID and has already been mapped by the
         //   direct mapper).
-        if (typeMapConfig.isDboThatMapsToItsOwnTable()) {
+        if (typeConfig.isDboThatMapsToItsOwnTable()) {
             // Get the raw value from field.
             Object newSubDbo = this.getFieldValueFromDbo(field, newParentDbo);
             Object oldSubDbo = this.getFieldValueFromDbo(field, oldParentDbo);
 
             // Map it to it's own table.
-            return this.createUpdateSqlForSubDbo(newSubDbo, oldSubDbo, typeMapConfig);
+            return this.createUpdateSqlForSubDbo(newSubDbo, oldSubDbo, typeConfig);
 
-        } else if (typeMapConfig.shouldTreatAsList()) {
+        } else if (typeConfig.shouldTreatAsList()) {
             // Get the raw value from field.
             Object newList = this.getFieldValueFromDbo(field, newParentDbo);
             Object oldList = this.getFieldValueFromDbo(field, oldParentDbo);
@@ -95,14 +95,14 @@ public class IndirectUpdater {
             }
 
             // Determine the type of objects the list contains
-            TypeMapConfig typeMapConfigForParent = this.typeMap.get(newParentDbo.getClass());
-            Class erasedTypeOfList = typeMapConfigForParent.getErasedType(field.getName());
+            TypeConfig typeConfigForParent = this.typeMap.get(newParentDbo.getClass());
+            Class erasedTypeOfList = typeConfigForParent.getErasedType(field.getName());
 
 
             // Create extra field for foreign key. (Only needed when inserting into lists (not when updating items in list)
             DbField extraForeignKeyDbField = new DbField();
             extraForeignKeyDbField.columnName = newParentDbo.getClass().getSimpleName() + "_" + field.getName();
-            extraForeignKeyDbField.value = typeMapConfigForParent.getPrimaryKey(newParentDbo);
+            extraForeignKeyDbField.value = typeConfigForParent.getPrimaryKey(newParentDbo);
 
             // Map the list to it's own table
             return this.createInsertUpdateOrDeleteSqlForEachObjectInList(newList, oldList, erasedTypeOfList, extraForeignKeyDbField);
@@ -111,7 +111,7 @@ public class IndirectUpdater {
         return Optional.empty();
     }
 
-    private Optional<List<String>> createUpdateSqlForSubDbo(Object newSubDbo, Object oldSubDbo, TypeMapConfig typeMapConfig) {
+    private Optional<List<String>> createUpdateSqlForSubDbo(Object newSubDbo, Object oldSubDbo, TypeConfig typeConfig) {
         if (oldSubDbo == null) {
             if (newSubDbo == null) {
                 // If it was null before and is null now, no need to touch the subdbo table.
@@ -137,7 +137,7 @@ public class IndirectUpdater {
                 // - if it's the same entity, simply keep recursing for updates.
                 // - otherwise, delete the old and insert the new.
 
-                boolean isSameEntity = this.directUpdater.specialEquals(newSubDbo, oldSubDbo, typeMapConfig);
+                boolean isSameEntity = this.directUpdater.specialEquals(newSubDbo, oldSubDbo, typeConfig);
                 if (isSameEntity) {
                     // Sub dbo is the same as before, but fields might have been changed. Check it.
                     // RECURSIVE call to process sub dbo as if it was a root. No need for foreign key here because the parent
@@ -174,11 +174,11 @@ public class IndirectUpdater {
         // Find out which items are new, which have been removed, and which need to be checked for updates.
         Collection<?> newCollection = (Collection) newList;
         Collection<?> oldCollection = (Collection) oldList;
-        TypeMapConfig typeMapConfig = this.typeMap.get(erasedTypeOfList);
+        TypeConfig typeConfig = this.typeMap.get(erasedTypeOfList);
         ListModificationStatements listModificationStatements = this.fullOuterJoin(
                 newCollection,
                 oldCollection,
-                (o, o2) -> this.directUpdater.specialEquals(o, o2, typeMapConfig));
+                (o, o2) -> this.directUpdater.specialEquals(o, o2, typeConfig));
 
         // Handle new items
         Stream<String> insertSqlsForAllItemsInList =

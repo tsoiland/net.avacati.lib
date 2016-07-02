@@ -3,7 +3,7 @@ package net.avacati.lib.sqlmapper.schema;
 import net.avacati.lib.sqlmapper.schema.DirectTableCreator.DbField2;
 import net.avacati.lib.sqlmapper.schema.DirectTableCreator.Table;
 import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
 import java.lang.reflect.Field;
@@ -105,21 +105,21 @@ public class IndirectTableCreator {
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.typeMap.get(type);
+        TypeConfig typeConfig = this.typeMap.get(type);
 
         // The value of our field can be processed in three ways:
         // - as a reference to a single object that should be processed as a dbo
         // - as a list of objects that should be processed as dbos.
         // - as neither (e.g. it is a String, int, Instant or UUID and has already been mapped by the
         //   direct mapper).
-        if (typeMapConfig.isDboThatMapsToItsOwnTable()) {
+        if (typeConfig.isDboThatMapsToItsOwnTable()) {
             // RECURSIVE call to process sub dbo as if it was a root. No need for foreign key here because the parent
             // dbo will handle it as one of it's columns.
             List<Table> createTableSqlForSubDbo = this.createCreateTableSqlsForClass2(field.getType());
 
             return Optional.of(createTableSqlForSubDbo);
 
-        } else if (typeMapConfig.shouldTreatAsList()) {
+        } else if (typeConfig.shouldTreatAsList()) {
             // Create extra field for foreign key. (Only needed for lists)
             DbField2 extraForeignKeyDbField = new DbField2();
             extraForeignKeyDbField.columnName = parentDboClass.getSimpleName() + "_" + field.getName();

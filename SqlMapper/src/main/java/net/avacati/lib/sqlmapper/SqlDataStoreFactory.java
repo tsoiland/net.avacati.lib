@@ -16,8 +16,8 @@ import java.sql.Connection;
 public class SqlDataStoreFactory {
     private TypeMap typeConfigMap;
 
-    public SqlDataStoreFactory(TypeMap typeConfigMap) {
-        this.typeConfigMap = typeConfigMap;
+    public SqlDataStoreFactory(TypeMap typeMap) {
+        this.typeConfigMap = typeMap;
     }
 
     public SqlDataStore createSqlDataStore(Connection connection) {

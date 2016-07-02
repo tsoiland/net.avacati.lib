@@ -23,10 +23,10 @@ public class DirectSelecter {
         }
 
         // Get the config
-        TypeMapConfig typeMapConfig = this.typeMap.get(type);
+        TypeConfig typeConfig = this.typeMap.get(type);
 
         // Define sql
-        String sql = "SELECT * FROM " + typeMapConfig.getTableNameForDbo() + " WHERE " + typeMapConfig.getPrimaryKeyFieldName() + "='" + id + "'";
+        String sql = "SELECT * FROM " + typeConfig.getTableNameForDbo() + " WHERE " + typeConfig.getPrimaryKeyFieldName() + "='" + id + "'";
 
         // Execute query
         ResultSet resultSet = this.sqlDoer.doSql2(sql);
@@ -78,7 +78,7 @@ public class DirectSelecter {
             }
 
             // Get the type config
-            TypeMapConfig typeMapConfig = this.typeMap.get(field.getType());
+            TypeConfig typeConfig = this.typeMap.get(field.getType());
 
             // The value of our field can be processed in three ways:
             // - directly from a column in the resultset.
@@ -86,7 +86,7 @@ public class DirectSelecter {
             // - by looking up several sub dbos from another table.
             String columnName = field.getName();
 
-            if (typeMapConfig.isDboThatMapsToItsOwnTable()) {
+            if (typeConfig.isDboThatMapsToItsOwnTable()) {
                 // Direct fields, and subDbos (which have fks) have raw values, but not list fields.
                 String rawValue = resultSet.getString(columnName);
 
@@ -101,29 +101,29 @@ public class DirectSelecter {
 
                 return;
 
-            } else if (typeMapConfig.shouldMapDirectlyToColumn()) {
+            } else if (typeConfig.shouldMapDirectlyToColumn()) {
                 // Direct fields, and subDbos (which have fks) have raw values, but not list fields.
                 String rawValue = resultSet.getString(columnName);
 
                 // Map it to correct type
-                Object correctTypeValue = typeMapConfig.reverseMap(rawValue);
+                Object correctTypeValue = typeConfig.reverseMap(rawValue);
 
                 // Assign it to the dbo
                 field.set(dbo, correctTypeValue);
                 return;
 
-            } else if (typeMapConfig.shouldTreatAsList()) {
+            } else if (typeConfig.shouldTreatAsList()) {
                 // Get the type map config for the parent dbo we're working on. That is, the one that has the list field on it.
-                TypeMapConfig typeMapConfigForDbo = this.typeMap.get(dbo.getClass());
+                TypeConfig typeConfigForDbo = this.typeMap.get(dbo.getClass());
 
                 // Determine value of foreign key to query for
                 final String fkColumnName = dbo.getClass().getSimpleName() + "_" + field.getName();
-                final String fkColumnValue = typeMapConfigForDbo.getPrimaryKey(dbo);
+                final String fkColumnValue = typeConfigForDbo.getPrimaryKey(dbo);
                 DbField foreignKeyToQuery = new DbField(fkColumnName, fkColumnValue);
 
-                Class<?> erasedType = typeMapConfigForDbo.getErasedType(field.getName());
+                Class<?> erasedType = typeConfigForDbo.getErasedType(field.getName());
 
-                TypeMapConfig tm2 = this.typeMap.get(erasedType);
+                TypeConfig tm2 = this.typeMap.get(erasedType);
                 // Query for sub dbos
                 List<Object> subDbos = this.querySubDbos(erasedType, tm2.getTableNameForDbo(), foreignKeyToQuery);
 
