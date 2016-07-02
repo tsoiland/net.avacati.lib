@@ -3,10 +3,7 @@ package net.avacati.lib.sqlmapper;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 class DirectSelecter {
     private Map<Class, TypeMapConfig> map;
@@ -17,7 +14,7 @@ class DirectSelecter {
         this.sqlDoer = sqlDoer;
     }
 
-    public <Dbo> Dbo getDbo(Class<Dbo> type, String id) {
+    public <Dbo> Optional<Dbo> getDbo(Class<Dbo> type, String id) {
         // Do we even support the type?
         if (!this.map.containsKey(type)) {
             throw new TypeNotSupportedException(type);
@@ -35,9 +32,14 @@ class DirectSelecter {
         // Map result set to dbos
         List<Dbo> dbos = mapResultSetToDbo(type, resultSet);
 
-        // There is just supposed to be one.
-        assert dbos.size() == 1;
-        return dbos.get(0);
+        // There is just supposed to be one or zero.
+        if (dbos.size() == 0) {
+            return Optional.empty();
+        } else if (dbos.size() == 1) {
+            return Optional.of(dbos.get(0));
+        } else {
+            throw new AssertionError("Wasn't supposed to be more than one row.");
+        }
     }
 
     private <Dbo> List<Dbo> mapResultSetToDbo(Class<? extends Dbo> type, ResultSet resultSet) {
@@ -86,11 +88,15 @@ class DirectSelecter {
                 // Direct fields, and subDbos (which have fks) have raw values, but not list fields.
                 String rawValue = resultSet.getString(columnName);
 
-                // RECURSIVELY query for sub-dbo
-                Object subDbo = this.getDbo(field.getType(), rawValue);
+                // If value is null, just leave it as null
+                if (rawValue != null) {
+                    // ... otherwise, RECURSIVELY query for sub-dbo
+                    Object subDbo = this.getDbo(field.getType(), rawValue).orElse(null);
 
-                // Assign sub-dbo to dbo
-                field.set(dbo, subDbo);
+                    // Assign sub-dbo to dbo
+                    field.set(dbo, subDbo);
+                }
+
                 return;
 
             } else if (typeMapConfig.shouldMapDirectlyToColumn()) {

@@ -12,7 +12,7 @@ class DirectMapper {
     }
 
     public String createInsertSqlForDirectlyMappableColumns(Object dbo) {
-        return createInsertSqlForDirectlyMappableColumns(dbo, new DbField[0]);
+        return this.createInsertSqlForDirectlyMappableColumns(dbo, new DbField[0]);
     }
 
     public String createInsertSqlForDirectlyMappableColumns(Object dbo, DbField... extraFields) {
@@ -20,7 +20,7 @@ class DirectMapper {
         List<DbField> dbFields =
             Arrays
                 .stream(dbo.getClass().getFields())
-                .map(field -> findColumnNameAndValueForFieldOnDbo(field, dbo))
+                .map(field -> this.findColumnNameAndValueForFieldOnDbo(field, dbo))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -68,7 +68,7 @@ class DirectMapper {
             dbField.columnName = field.getName();
 
             // Get the raw value from field.
-            Object fieldValue = getFieldValueFromDbo(field, dbo);
+            Object fieldValue = this.getFieldValueFromDbo(field, dbo);
 
             // Assign column value based on mapping function.
             dbField.value = typeMapConfig.map(fieldValue);

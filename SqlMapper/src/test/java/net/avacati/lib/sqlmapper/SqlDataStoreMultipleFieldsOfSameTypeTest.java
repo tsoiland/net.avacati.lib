@@ -34,11 +34,13 @@ public class SqlDataStoreMultipleFieldsOfSameTypeTest {
         tableCreator.createTableFor(TestDbo.class);
 
         // Arrange SUT
+        IndirectMapper indirectMapper = new IndirectMapper(typemap, new DirectMapper(typemap));
         SqlDataStore<TestDbo> sqlDataStore = new SqlDataStore<>(
-                new IndirectMapper(typemap, new DirectMapper(typemap)),
+                indirectMapper,
                 sqlDoerH2,
                 new DirectSelecter(typemap, sqlDoerH2),
-                TestDbo.class);
+                TestDbo.class,
+                new IndirectUpdater(typemap, new DirectUpdater(typemap), indirectMapper));
 
         // Arrange data
         // Arrange testDbo

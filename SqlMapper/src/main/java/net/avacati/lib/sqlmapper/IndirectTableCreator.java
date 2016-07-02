@@ -17,7 +17,7 @@ class IndirectTableCreator {
     }
 
     public List<String> createCreateTableSqlsForClass(Class dboClass) {
-        final List<Table> tablesToCreate = createCreateTableSqlsForClass2(dboClass);
+        final List<Table> tablesToCreate = this.createCreateTableSqlsForClass2(dboClass);
 
         return tablesToCreate
                 .stream()
@@ -57,7 +57,7 @@ class IndirectTableCreator {
     }
 
     public List<Table> createCreateTableSqlsForClass2(Class dboClass) {
-        return createCreateTableSqlsForClass(dboClass, new DbField2[0]);
+        return this.createCreateTableSqlsForClass(dboClass, new DbField2[0]);
     }
 
     /**
@@ -76,7 +76,7 @@ class IndirectTableCreator {
         sql.addAll(
                 Arrays
                         .stream(dboClass.getFields())
-                        .map(field -> createCreateTableSqlForSubDbo(field, dboClass))
+                        .map(field -> this.createCreateTableSqlForSubDbo(field, dboClass))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .flatMap(Collection::stream)

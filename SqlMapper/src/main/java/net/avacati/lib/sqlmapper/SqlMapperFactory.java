@@ -12,19 +12,21 @@ public class SqlMapperFactory<T> {
     public SqlMapperFactory(Class<T> dboType, Map<Class, TypeMapConfig> typemap, JdbcDataSource dataSource) {
         SqlDoerH2 sqlDoerH2 = SqlDoerH2.create(dataSource);
         this.tableCreator = new TableCreator(new IndirectTableCreator(typemap, new DirectTableCreator(typemap)), sqlDoerH2);
+        final IndirectMapper indirectMapper = new IndirectMapper(typemap, new DirectMapper(typemap));
         this.sqlDataStore = new SqlDataStore<>(
-                new IndirectMapper(typemap, new DirectMapper(typemap)),
+                indirectMapper,
                 sqlDoerH2,
                 new DirectSelecter(typemap, sqlDoerH2),
-                dboType);
+                dboType,
+                new IndirectUpdater(typemap, new DirectUpdater(typemap), indirectMapper));
         this.dboType = dboType;
     }
 
     public void createSchema() {
-        tableCreator.createTableFor(dboType);
+        this.tableCreator.createTableFor(this.dboType);
     }
 
     public SqlDataStore<T> getSqlDataStore() {
-        return sqlDataStore;
+        return this.sqlDataStore;
     }
 }

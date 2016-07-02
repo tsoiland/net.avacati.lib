@@ -1,10 +1,7 @@
 package net.avacati.lib.sqlmapper;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 public class TypeMapConfig {
@@ -19,6 +16,8 @@ public class TypeMapConfig {
     private Function<String, Object> reverseFunction;
     private String primaryKeyFieldName;
     private Map<String,Class> erasedTypes;
+    private boolean shouldEqualDirectly;
+    private boolean shouldEqualUsingPK;
 
     private TypeMapConfig() {
 
@@ -33,7 +32,7 @@ public class TypeMapConfig {
     }
 
     public String getTableNameForDbo() {
-        return directRowTableName;
+        return this.directRowTableName;
     }
 
 
@@ -48,6 +47,8 @@ public class TypeMapConfig {
         typeMapConfig.shouldMapDirectlyToColumn = true;
         typeMapConfig.shouldRecurse = false;
         typeMapConfig.shouldTreatAsList = false;
+        typeMapConfig.shouldEqualDirectly = true;
+        typeMapConfig.shouldEqualUsingPK = false;
         return typeMapConfig;
     }
 
@@ -64,11 +65,13 @@ public class TypeMapConfig {
         typeMapConfig.shouldRecurse = false;
         typeMapConfig.shouldTreatAsList = false;
         typeMapConfig.erasedTypes = erasedTypes;
+        typeMapConfig.shouldEqualDirectly = false;
+        typeMapConfig.shouldEqualUsingPK = true;
         return typeMapConfig;
     }
 
     public boolean shouldMapDirectlyToColumn() {
-        return shouldMapDirectlyToColumn;
+        return this.shouldMapDirectlyToColumn;
     }
 
     public static TypeMapConfig asSubDbo(String tableName, Function<Object, String> foreignKeyFunction, String primaryKeyFieldName) {
@@ -85,6 +88,8 @@ public class TypeMapConfig {
         typeMapConfig.shouldRecurse = true;
         typeMapConfig.shouldTreatAsList = false;
         typeMapConfig.erasedTypes = erasedTypes;
+        typeMapConfig.shouldEqualDirectly = false;
+        typeMapConfig.shouldEqualUsingPK = true;
         return typeMapConfig;
     }
 
@@ -99,11 +104,11 @@ public class TypeMapConfig {
     }
 
     public boolean isDboThatMapsToItsOwnTable() {
-        return shouldRecurse;
+        return this.shouldRecurse;
     }
 
     public boolean shouldTreatAsList() {
-        return shouldTreatAsList;
+        return this.shouldTreatAsList;
     }
 
     public String getPrimaryKey(Object dbo) {
@@ -115,7 +120,7 @@ public class TypeMapConfig {
     }
 
     public String getPrimaryKeyFieldName() {
-        return primaryKeyFieldName;
+        return this.primaryKeyFieldName;
     }
 
     public static void putStandardTypeConfigs(Map<Class, TypeMapConfig> map) {
@@ -128,5 +133,13 @@ public class TypeMapConfig {
 
     public Class getErasedType(String name) {
         return this.erasedTypes.get(name);
+    }
+
+    public boolean shouldEqualDirectly() {
+        return this.shouldEqualDirectly;
+    }
+
+    public boolean shouldEqualUsingPK() {
+        return this.shouldEqualUsingPK;
     }
 }

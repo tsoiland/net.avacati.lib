@@ -14,7 +14,7 @@ class IndirectMapper {
     }
 
     public List<String> createInsertSqlsForObjectTree(Object dbo) {
-        return createInsertSqlsForObjectTree(dbo, new DbField[0]);
+        return this.createInsertSqlsForObjectTree(dbo, new DbField[0]);
     }
 
     /**
@@ -22,7 +22,7 @@ class IndirectMapper {
      *
      * @return potentially multiple sql insert statements.
      */
-    private List<String> createInsertSqlsForObjectTree(Object dbo, DbField... extraFields) {
+    public List<String> createInsertSqlsForObjectTree(Object dbo, DbField... extraFields) {
         // This method will return several sql insert statements.
         List<String> sql = new ArrayList<>();
 
@@ -33,7 +33,7 @@ class IndirectMapper {
         sql.addAll(
                 Arrays
                         .stream(dbo.getClass().getFields())
-                        .map(field -> createInsertSqlForSubDbo(field, dbo))
+                        .map(field -> this.createInsertSqlForSubDbo(field, dbo))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .flatMap(Collection::stream)
@@ -68,14 +68,14 @@ class IndirectMapper {
         //   direct mapper).
         if (typeMapConfig.isDboThatMapsToItsOwnTable()) {
             // Get the raw value from field.
-            Object subDbo = getFieldValueFromDbo(field, parentDbo);
+            Object subDbo = this.getFieldValueFromDbo(field, parentDbo);
 
             // Map it to it's own table.
-            return createInsertSqlForSubDbo(subDbo);
+            return this.createInsertSqlForSubDbo(subDbo);
 
         } else if (typeMapConfig.shouldTreatAsList()) {
             // Get the raw value from field.
-            Object list = getFieldValueFromDbo(field, parentDbo);
+            Object list = this.getFieldValueFromDbo(field, parentDbo);
 
             if(list == null) {
                 throw new CannotSqlMapNullListException("Field: " + field.getName() + " is null, and should be mapped as list. Unsupported.");
@@ -86,7 +86,7 @@ class IndirectMapper {
             extraForeignKeyDbField.value = this.map.get(parentDbo.getClass()).getPrimaryKey(parentDbo);
 
             // Map the list to it's own table
-            return createInsertSqlForEachObjectInList(list, extraForeignKeyDbField);
+            return this.createInsertSqlForEachObjectInList(list, extraForeignKeyDbField);
         }
 
         return Optional.empty();
@@ -100,7 +100,7 @@ class IndirectMapper {
 
         // RECURSIVE call to process sub dbo as if it was a root. No need for foreign key here because the parent
         // dbo will handle it as one of it's columns.
-        List<String> insertSqlForSubDbo = createInsertSqlsForObjectTree(subDbo);
+        List<String> insertSqlForSubDbo = this.createInsertSqlsForObjectTree(subDbo);
 
         return Optional.of(insertSqlForSubDbo);
     }

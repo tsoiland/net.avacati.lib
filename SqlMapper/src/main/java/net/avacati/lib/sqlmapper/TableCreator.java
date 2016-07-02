@@ -13,6 +13,7 @@ class TableCreator {
         this.indirectTableCreator
                 .createCreateTableSqlsForClass(dboClass)
                 .stream()
+//                .peek(System.out::println)
                 .forEach(this.sqlDoer::doSql);
     }
 }
