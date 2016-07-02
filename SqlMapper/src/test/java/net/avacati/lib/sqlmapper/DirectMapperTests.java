@@ -18,7 +18,7 @@ public class DirectMapperTests {
         map.putStandardTypeConfigs();
         map.asDboToTable(DirectTestDbo.class, "test_table", null, null);
         map.directToString(TestEnum.class, TestEnum::valueOf);
-        map.asSubDbo(DirectSubTestDbo.class, "sub_test_table", o -> ((DirectSubTestDbo) o).primaryKeyColumn.toString(), "not used");
+        map.asSubDbo(DirectSubTestDbo.class, "sub_test_table", o -> o.primaryKeyColumn.toString(), "not used");
 
         // Arrange SUT
         DirectInserter directInserter = new DirectInserter(map);

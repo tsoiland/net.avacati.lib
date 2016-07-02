@@ -17,10 +17,10 @@ public class IndirectMapperTests {
         TypeMap typeMap = new TypeMap();
         typeMap.putStandardTypeConfigs();
         typeMap.asList(List.class);
-        typeMap.asDboToTable(TestDbo.class, "test_table", o -> ((TestDbo) o).uuidColumn.toString(), "uuidColumn");
-        typeMap.asSubDbo(SubTestDbo.class, "sub_test_table", o -> ((SubTestDbo) o).primaryKeyColumn.toString(), "not used");
-        typeMap.asSubDbo(SubSubTestDbo.class, "sub_sub_test_table", o -> ((SubSubTestDbo) o).primaryKeyColumn.toString(), "not used");
-        typeMap.asSubDbo(ListItemTestDbo.class, "list_item_test_table", o -> ((ListItemTestDbo) o).primaryKeyColumn.toString(), "not used");
+        typeMap.asDboToTable(TestDbo.class, "test_table", o -> o.uuidColumn.toString(), "uuidColumn");
+        typeMap.asSubDbo(SubTestDbo.class, "sub_test_table", o -> o.primaryKeyColumn.toString(), "not used");
+        typeMap.asSubDbo(SubSubTestDbo.class, "sub_sub_test_table", o -> o.primaryKeyColumn.toString(), "not used");
+        typeMap.asSubDbo(ListItemTestDbo.class, "list_item_test_table", o -> o.primaryKeyColumn.toString(), "not used");
 
         // Arrange SUT
         IndirectInserter directMapper = new IndirectInserter(typeMap, new DirectInserter(typeMap));

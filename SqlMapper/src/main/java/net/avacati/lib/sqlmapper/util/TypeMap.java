@@ -12,45 +12,53 @@ import java.util.function.Function;
 public class TypeMap {
     private final Map<Class, TypeConfig> map = new HashMap<>();
 
-    public void putStandardTypeConfigs() {
+    public TypeMap putStandardTypeConfigs() {
         this.directToString(String.class, s -> s);
         this.directToString(UUID.class, UUID::fromString);
         this.direct(int.class, o -> Integer.toString((int) o), Integer::parseInt);
         this.direct(Instant.class, o -> Long.toString(((Instant) o).toEpochMilli()), s -> Instant.ofEpochMilli(Long.valueOf(s)));
         this.asList(List.class);
+        return this;
     }
 
     public TypeConfig get(Class<?> dboClass) {
         return this.map.get(dboClass);
     }
 
-    public void directToString(Class mappedType, Function<String, Object> reverseFunction) {
+    public <T> TypeMap directToString(Class<T> mappedType, Function<String, T> reverseFunction) {
         this.map.put(mappedType, TypeConfig.direct(Object::toString, reverseFunction));
+        return this;
     }
 
-    public void direct(Class mappedType, Function<Object, String> mappingFunction, Function<String, Object> reverseFunction) {
+    public <T> TypeMap direct(Class<T> mappedType, Function<T, String> mappingFunction, Function<String, T> reverseFunction) {
         this.map.put(mappedType, TypeConfig.direct(mappingFunction, reverseFunction));
+        return this;
     }
 
-    public void asDboToTable(Class mappedType, String tableName, Function<Object, String> primayKeyMapFunction, String primaryKeyFieldName) {
+    public <T> TypeMap asDboToTable(Class<T> mappedType, String tableName, Function<T, String> primayKeyMapFunction, String primaryKeyFieldName) {
         this.asDboToTable(mappedType, tableName, primayKeyMapFunction, primaryKeyFieldName, new ErasedTypes());
+        return this;
     }
 
-    public void asDboToTable(Class mappedType, String tableName, Function<Object, String> primayKeyMapFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
+    public <T> TypeMap asDboToTable(Class<T> mappedType, String tableName, Function<T, String> primayKeyMapFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
         this.map.put(mappedType, TypeConfig.asDboToTable(tableName, primayKeyMapFunction, primaryKeyFieldName, erasedTypes));
+        return this;
     }
 
-    public void asSubDbo(Class mappedType, String tableName, Function<Object, String> foreignKeyFunction, String primaryKeyFieldName) {
+    public <T> TypeMap asSubDbo(Class<T> mappedType, String tableName, Function<T, String> foreignKeyFunction, String primaryKeyFieldName) {
         this.asSubDbo(mappedType, tableName, foreignKeyFunction, primaryKeyFieldName, new ErasedTypes());
+        return this;
     }
 
-    public void asSubDbo(Class mappedType, String tableName, Function<Object, String> primaryKeyFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
+    public <T> TypeMap asSubDbo(Class<T> mappedType, String tableName, Function<T, String> primaryKeyFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
         this.map.put(mappedType, TypeConfig.asSubDbo(tableName, primaryKeyFunction, primaryKeyFieldName, erasedTypes));
+        return this;
 
     }
 
-    public void asList(Class mappedType) {
+    public TypeMap asList(Class mappedType) {
         this.map.put(mappedType, TypeConfig.asList());
+        return this;
     }
 
     public <Dbo> boolean containsKey(Class<Dbo> type) {

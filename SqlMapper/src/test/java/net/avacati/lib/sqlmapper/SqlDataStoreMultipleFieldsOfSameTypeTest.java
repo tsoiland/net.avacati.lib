@@ -27,14 +27,14 @@ public class SqlDataStoreMultipleFieldsOfSameTypeTest {
 
         // - TestDbo
         typeMap.asDboToTable(TestDbo.class, "test_table",
-                o -> ((TestDbo) o).uuidColumn.toString(),
+                o -> o.uuidColumn.toString(),
                 "uuidColumn",
                 new ErasedTypes()
                     .put("listSubZ", SubTestDbo.class)
                     .put("listSubW", SubTestDbo.class));
 
         // - SubTestDbo
-        typeMap.asSubDbo(SubTestDbo.class, "sub_test_table", o -> ((SubTestDbo) o).primaryKeyColumn.toString(), "primaryKeyColumn");
+        typeMap.asSubDbo(SubTestDbo.class, "sub_test_table", o -> o.primaryKeyColumn.toString(), "primaryKeyColumn");
 
         // Arrange db schema
 //        SqlDoerH2 sqlDoerH2 = SqlDoerH2.create();

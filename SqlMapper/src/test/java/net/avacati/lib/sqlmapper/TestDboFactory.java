@@ -40,30 +40,30 @@ public class TestDboFactory {
         typeMap.asDboToTable(
                 TestDbo.class,
                 "test_table",
-                o -> ((TestDbo) o).uuidColumn.toString(),
+                o -> o.uuidColumn.toString(),
                 "uuidColumn",
                 new ErasedTypes().put("subTestDboList", TestDbo.ListItemTestDbo.class));
 
         typeMap.asSubDbo(
                 TestDbo.SubTestDbo.class,
                 "sub_test_table",
-                o -> ((TestDbo.SubTestDbo) o).primaryKeyColumn.toString(),
+                o -> o.primaryKeyColumn.toString(),
                 "primaryKeyColumn",
                 new ErasedTypes().put("subListItemTestDboList", TestDbo.SubListItemTestDbo.class));
         typeMap.asSubDbo(
                 TestDbo.SubSubTestDbo.class,
                 "sub_sub_test_table",
-                o -> ((TestDbo.SubSubTestDbo) o).primaryKeyColumn.toString(),
+                o -> o.primaryKeyColumn.toString(),
                 "primaryKeyColumn");
         typeMap.asSubDbo(
                 TestDbo.ListItemTestDbo.class,
                 "list_item_test_table",
-                o -> ((TestDbo.ListItemTestDbo) o).primaryKeyColumn.toString(),
+                o -> o.primaryKeyColumn.toString(),
                 "primaryKeyColumn");
         typeMap.asSubDbo(
                 TestDbo.SubListItemTestDbo.class,
                 "sub_list_item_test_table",
-                o -> ((TestDbo.SubListItemTestDbo) o).primaryKeyColumn.toString(),
+                o -> o.primaryKeyColumn.toString(),
                 "primaryKeyColumn");
         return typeMap;
     }

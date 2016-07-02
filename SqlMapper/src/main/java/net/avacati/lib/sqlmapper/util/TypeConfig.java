@@ -40,10 +40,10 @@ public class TypeConfig {
         return direct(Object::toString, reverseFunction);
     }
 
-    public static TypeConfig direct(Function<Object, String> mappingFunction, Function<String, Object> reverseFunction) {
+    public static <T> TypeConfig direct(Function<T, String> mappingFunction, Function<String, T> reverseFunction) {
         TypeConfig typeConfig = new TypeConfig();
-        typeConfig.mappingFunction = mappingFunction;
-        typeConfig.reverseFunction = reverseFunction;
+        typeConfig.mappingFunction = (Function<Object, String>) mappingFunction;
+        typeConfig.reverseFunction = (Function<String, Object>) reverseFunction;
         typeConfig.shouldMapDirectlyToColumn = true;
         typeConfig.shouldRecurse = false;
         typeConfig.shouldTreatAsList = false;
@@ -56,9 +56,9 @@ public class TypeConfig {
         return asDboToTable(tableName, primayKeyMapFunction, primaryKeyFieldName, new ErasedTypes());
     }
 
-    public static TypeConfig asDboToTable(String tableName, Function<Object, String> primayKeyMapFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
+    public static TypeConfig asDboToTable(String tableName, Function<?, String> primayKeyMapFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
         TypeConfig typeConfig = new TypeConfig();
-        typeConfig.primaryKeyMapFunction = primayKeyMapFunction;
+        typeConfig.primaryKeyMapFunction = (Function<Object, String>) primayKeyMapFunction;
         typeConfig.directRowTableName = tableName;
         typeConfig.primaryKeyFieldName = primaryKeyFieldName;
         typeConfig.shouldMapDirectlyToColumn = false;
@@ -78,11 +78,11 @@ public class TypeConfig {
         return asSubDbo(tableName, foreignKeyFunction, primaryKeyFieldName, new ErasedTypes());
     }
 
-    public static TypeConfig asSubDbo(String tableName, Function<Object, String> primaryKeyFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
+    public static TypeConfig asSubDbo(String tableName, Function<?, String> primaryKeyFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
         TypeConfig typeConfig = new TypeConfig();
         typeConfig.directRowTableName = tableName;
-        typeConfig.mappingFunction = primaryKeyFunction;
-        typeConfig.primaryKeyMapFunction = primaryKeyFunction;
+        typeConfig.mappingFunction = (Function<Object, String>) primaryKeyFunction;
+        typeConfig.primaryKeyMapFunction = (Function<Object, String>) primaryKeyFunction;
         typeConfig.primaryKeyFieldName = primaryKeyFieldName;
         typeConfig.shouldMapDirectlyToColumn = true;
         typeConfig.shouldRecurse = true;
