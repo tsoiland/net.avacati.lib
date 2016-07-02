@@ -1,14 +1,14 @@
 package net.avacati.lib.sqlmapper.schema;
 
-import net.avacati.lib.sqlmapper.util.SqlDoer;
+import net.avacati.lib.sqlmapper.util.JdbcHelper;
 
 public class TableCreator {
     private IndirectTableCreator indirectTableCreator;
-    private SqlDoer sqlDoer;
+    private JdbcHelper jdbcHelper;
 
-    public TableCreator(IndirectTableCreator indirectTableCreator, SqlDoer sqlDoer) {
+    public TableCreator(IndirectTableCreator indirectTableCreator, JdbcHelper jdbcHelper) {
         this.indirectTableCreator = indirectTableCreator;
-        this.sqlDoer = sqlDoer;
+        this.jdbcHelper = jdbcHelper;
     }
 
     public void createTableFor(Class dboClass) {
@@ -16,6 +16,6 @@ public class TableCreator {
                 .createCreateTableSqlsForClass(dboClass)
                 .stream()
 //                .peek(System.out::println)
-                .forEach(this.sqlDoer::execute);
+                .forEach(this.jdbcHelper::execute);
     }
 }

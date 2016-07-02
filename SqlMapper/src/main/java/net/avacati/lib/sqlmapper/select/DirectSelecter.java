@@ -11,11 +11,11 @@ import java.util.*;
 
 public class DirectSelecter {
     private TypeMap typeMap;
-    private SqlDoer sqlDoer;
+    private JdbcHelper jdbcHelper;
 
-    public DirectSelecter(TypeMap typeMap, SqlDoer sqlDoer) {
+    public DirectSelecter(TypeMap typeMap, JdbcHelper jdbcHelper) {
         this.typeMap = typeMap;
-        this.sqlDoer = sqlDoer;
+        this.jdbcHelper = jdbcHelper;
     }
 
     public <Dbo> Optional<Dbo> getDbo(Class<Dbo> type, String id) {
@@ -25,11 +25,9 @@ public class DirectSelecter {
         // Define sql
         String sql = "SELECT * FROM " + typeConfig.getTableNameForDbo() + " WHERE " + typeConfig.getPrimaryKeyFieldName() + "='" + id + "'";
 
-        // Execute query
-        ResultSet resultSet = this.sqlDoer.query(sql);
 
-        // Map result set to dbos
-        List<Dbo> dbos = this.mapResultSetToDbo(type, resultSet);
+        // Execute query and map result set to dbos
+        List<Dbo> dbos = this.jdbcHelper.retrieveList(sql, rs -> this.mapResultSetToDbo(type, rs));
 
         // There is just supposed to be one or zero.
         if (dbos.size() == 0) {
@@ -134,11 +132,10 @@ public class DirectSelecter {
         // Select where
         String queryForSubDbos = "SELECT * FROM " + tableName + " WHERE " + foreignKeyDbField.columnName + "='" + foreignKeyDbField.value + "'";
 
-        // Execute query
-        ResultSet resultSet = this.sqlDoer.query(queryForSubDbos);
-
-        // RECURSE on resultset
-        List<SubDbo> subDbo = this.mapResultSetToDbo(subDboType, resultSet);
+        // Execute query and RECURSE on resultset
+        List<SubDbo> subDbo = this.jdbcHelper.retrieveList(
+                queryForSubDbos,
+                rs -> this.mapResultSetToDbo(subDboType, rs));
 
         return subDbo;
     }
