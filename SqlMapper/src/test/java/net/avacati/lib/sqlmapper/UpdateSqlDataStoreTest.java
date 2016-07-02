@@ -12,7 +12,7 @@ public class UpdateSqlDataStoreTest {
 
     private TestDbo originalTestDbo;
     private TestDbo modifiedTestDbo;
-    private SqlDataStore<TestDbo> sqlDataStore;
+    private SqlDataStore sqlDataStore;
 
     @Before
     public void setUp() {
@@ -20,19 +20,19 @@ public class UpdateSqlDataStoreTest {
         Map<Class, TypeMapConfig> typemap = TestDboFactory.createTypeMap();
 
         // Arrange SUT
-        this.sqlDataStore = SqlDataStoreFactory.createSqlDataStore(typemap);
+        this.sqlDataStore = SUTFactory.createSqlDataStore(typemap, TestDbo.class);
 
         // Arrange data
         this.originalTestDbo = TestDboFactory.createTestDbo();
 
         // Insert and get back another copy from the db
-        this.sqlDataStore.insert(this.originalTestDbo.uuidColumn, this.originalTestDbo);
-        this.modifiedTestDbo = this.sqlDataStore.get(this.originalTestDbo.uuidColumn);
+        this.sqlDataStore.insert(this.originalTestDbo);
+        this.modifiedTestDbo = this.sqlDataStore.get(TestDbo.class, this.originalTestDbo.uuidColumn);
     }
 
     private TestDbo runUpdate() {
-        this.sqlDataStore.update(this.originalTestDbo.uuidColumn, this.modifiedTestDbo, this.originalTestDbo);
-        return this.sqlDataStore.get(this.originalTestDbo.uuidColumn);
+        this.sqlDataStore.update(this.modifiedTestDbo, this.originalTestDbo);
+        return this.sqlDataStore.get(TestDbo.class, this.originalTestDbo.uuidColumn);
     }
 
     @Test

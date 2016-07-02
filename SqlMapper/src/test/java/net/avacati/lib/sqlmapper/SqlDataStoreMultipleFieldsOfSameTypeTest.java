@@ -45,11 +45,10 @@ public class SqlDataStoreMultipleFieldsOfSameTypeTest {
 
         // Arrange SUT
         IndirectInserter indirectInserter = new IndirectInserter(typemap, new DirectInserter(typemap));
-        SqlDataStore<TestDbo> sqlDataStore = new SqlDataStore<>(
+        SqlDataStore sqlDataStore = new SqlDataStoreImpl(
                 indirectInserter,
                 sqlDoerH2,
                 new DirectSelecter(typemap, sqlDoerH2),
-                TestDbo.class,
                 new IndirectUpdater(typemap, new DirectUpdater(typemap), indirectInserter));
 
         // Arrange data
@@ -97,8 +96,8 @@ public class SqlDataStoreMultipleFieldsOfSameTypeTest {
         testDbo.listSubW.add(w2);
 
         // Act
-        sqlDataStore.insert(testDbo.uuidColumn, testDbo);
-        TestDbo resultTestDbo = sqlDataStore.get(testDbo.uuidColumn);
+        sqlDataStore.insert(testDbo);
+        TestDbo resultTestDbo = sqlDataStore.get(TestDbo.class, testDbo.uuidColumn);
 
         // Assert
         Assert.assertNotNull(resultTestDbo);

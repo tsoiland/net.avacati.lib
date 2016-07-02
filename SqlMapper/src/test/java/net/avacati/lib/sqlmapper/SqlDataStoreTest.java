@@ -1,7 +1,6 @@
 package net.avacati.lib.sqlmapper;
 
 import net.avacati.lib.sqlmapper.util.TypeMapConfig;
-import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,14 +27,8 @@ public class SqlDataStoreTest {
         typemap.put(ListItemTestDbo.class, TypeMapConfig.asSubDbo("list_item_test_table", o -> ((ListItemTestDbo) o).primaryKeyColumn.toString(), "primaryKeyColumn"));
         typemap.put(SubListItemTestDbo.class, TypeMapConfig.asSubDbo("sub_list_item_test_table", o -> ((SubListItemTestDbo) o).primaryKeyColumn.toString(), "primaryKeyColumn"));
 
-        // Arrange schema creator
-
         // Arrange SUT
-        JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setURL("jdbc:h2:mem:");
-        final SqlMapperFactory<TestDbo> sqlMapperFactory = new SqlMapperFactory<>(TestDbo.class, typemap, dataSource);
-        sqlMapperFactory.createSchema();
-        SqlDataStore<TestDbo> sqlDataStore = sqlMapperFactory.getSqlDataStore();
+        final SqlDataStore sqlDataStore = SUTFactory.createSqlDataStore(typemap, TestDbo.class);
 
         // Arrange data
         // Arrange testDbo
@@ -60,8 +53,8 @@ public class SqlDataStoreTest {
         testDbo.subTestDbo.subSubTestDbo.primaryKeyColumn = UUID.fromString("1204445f-6fd1-4aea-9098-f8db55871a9b");
 
         // Act
-        sqlDataStore.insert(testDbo.uuidColumn, testDbo);
-        TestDbo resultTestDbo = sqlDataStore.get(testDbo.uuidColumn);
+        sqlDataStore.insert(testDbo);
+        TestDbo resultTestDbo = sqlDataStore.get(TestDbo.class, testDbo.uuidColumn);
 
         // Assert
         Assert.assertNotNull(resultTestDbo);
