@@ -9,29 +9,32 @@ import net.avacati.lib.sqlmapper.select.DirectSelecter;
 import net.avacati.lib.sqlmapper.update.DirectUpdater;
 import net.avacati.lib.sqlmapper.update.IndirectUpdater;
 import net.avacati.lib.sqlmapper.util.SqlDoerH2;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeMap;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig.ErasedTypes;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class SqlDataStoreMultipleFieldsOfSameTypeTest {
     @Test
     public void insertAndGet() {
         // Arrange type mapping
-        Map<Class, TypeMapConfig> typemap = new HashMap<>();
-
-        // - standards
-        TypeMapConfig.putStandardTypeConfigs(typemap);
+        TypeMap typeMap = new TypeMap();
+        typeMap.putStandardTypeConfigs();
 
         // - TestDbo
-        Map<String, Class> erasedTypesFromTestDbo = new HashMap<>();
-        erasedTypesFromTestDbo.put("listSubZ", SubTestDbo.class);
-        erasedTypesFromTestDbo.put("listSubW", SubTestDbo.class);
-        typemap.put(TestDbo.class, TypeMapConfig.asDboToTable("test_table", o -> ((TestDbo) o).uuidColumn.toString(), "uuidColumn", erasedTypesFromTestDbo));
+        typeMap.asDboToTable(TestDbo.class, "test_table",
+                o -> ((TestDbo) o).uuidColumn.toString(),
+                "uuidColumn",
+                new ErasedTypes()
+                    .put("listSubZ", SubTestDbo.class)
+                    .put("listSubW", SubTestDbo.class));
 
         // - SubTestDbo
-        typemap.put(SubTestDbo.class, TypeMapConfig.asSubDbo("sub_test_table", o -> ((SubTestDbo) o).primaryKeyColumn.toString(), "primaryKeyColumn"));
+        typeMap.asSubDbo(SubTestDbo.class, "sub_test_table", o -> ((SubTestDbo) o).primaryKeyColumn.toString(), "primaryKeyColumn");
 
         // Arrange db schema
 //        SqlDoerH2 sqlDoerH2 = SqlDoerH2.create();
@@ -40,16 +43,16 @@ public class SqlDataStoreMultipleFieldsOfSameTypeTest {
 
         // Arrange schema creator
         SqlDoerH2 sqlDoerH2 = SqlDoerH2.create();
-        final TableCreator tableCreator = new TableCreator(new IndirectTableCreator(typemap, new DirectTableCreator(typemap)), sqlDoerH2);
+        final TableCreator tableCreator = new TableCreator(new IndirectTableCreator(typeMap, new DirectTableCreator(typeMap)), sqlDoerH2);
         tableCreator.createTableFor(TestDbo.class);
 
         // Arrange SUT
-        IndirectInserter indirectInserter = new IndirectInserter(typemap, new DirectInserter(typemap));
+        IndirectInserter indirectInserter = new IndirectInserter(typeMap, new DirectInserter(typeMap));
         SqlDataStore sqlDataStore = new SqlDataStoreImpl(
                 indirectInserter,
                 sqlDoerH2,
-                new DirectSelecter(typemap, sqlDoerH2),
-                new IndirectUpdater(typemap, new DirectUpdater(typemap), indirectInserter));
+                new DirectSelecter(typeMap, sqlDoerH2),
+                new IndirectUpdater(typeMap, new DirectUpdater(typeMap), indirectInserter));
 
         // Arrange data
         // Arrange testDbo

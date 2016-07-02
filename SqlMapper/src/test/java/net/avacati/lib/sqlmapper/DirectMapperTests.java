@@ -3,24 +3,22 @@ package net.avacati.lib.sqlmapper;
 import net.avacati.lib.sqlmapper.DirectMapperTests.DirectTestDbo.TestEnum;
 import net.avacati.lib.sqlmapper.insert.DirectInserter;
 import net.avacati.lib.sqlmapper.util.DbField;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class DirectMapperTests {
     @Test
     public void AllTypesDbo() {
         // Setup type mapping
-        Map<Class, TypeMapConfig> map = new HashMap<>();
-        TypeMapConfig.putStandardTypeConfigs(map);
-        map.put(DirectTestDbo.class, TypeMapConfig.asDboToTable("test_table", null, null));
-        map.put(TestEnum.class, TypeMapConfig.directToString(TestEnum::valueOf));
-        map.put(DirectSubTestDbo.class, TypeMapConfig.asSubDbo("sub_test_table", o -> ((DirectSubTestDbo) o).primaryKeyColumn.toString(), "not used"));
+        TypeMap map = new TypeMap();
+        map.putStandardTypeConfigs();
+        map.asDboToTable(DirectTestDbo.class, "test_table", null, null);
+        map.directToString(TestEnum.class, TestEnum::valueOf);
+        map.asSubDbo(DirectSubTestDbo.class, "sub_test_table", o -> ((DirectSubTestDbo) o).primaryKeyColumn.toString(), "not used");
 
         // Arrange SUT
         DirectInserter directInserter = new DirectInserter(map);

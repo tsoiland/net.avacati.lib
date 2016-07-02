@@ -1,12 +1,13 @@
 package net.avacati.lib.sqlmapper;
 
 import net.avacati.lib.sqlmapper.TestDbo.ListItemTestDbo;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 public class UpdateSqlDataStoreTest {
 
@@ -17,7 +18,7 @@ public class UpdateSqlDataStoreTest {
     @Before
     public void setUp() {
         // Arrange type map
-        Map<Class, TypeMapConfig> typemap = TestDboFactory.createTypeMap();
+        TypeMap typemap = TestDboFactory.createTypeMap();
 
         // Arrange SUT
         this.sqlDataStore = SUTFactory.createSqlDataStore(typemap, TestDbo.class);

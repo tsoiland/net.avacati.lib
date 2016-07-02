@@ -1,14 +1,13 @@
 package net.avacati.lib.sqlmapper;
 
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import org.h2.jdbcx.JdbcDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 public class SUTFactory {
-    public static SqlDataStore createSqlDataStore(Map<Class, TypeMapConfig> typemap, Class<?> dboType) {
+    public static SqlDataStore createSqlDataStore(TypeMap typemap, Class<?> dboType) {
         // H2 datasource
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL("jdbc:h2:mem:");

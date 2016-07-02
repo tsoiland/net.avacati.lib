@@ -2,6 +2,7 @@ package net.avacati.lib.sqlmapper.schema;
 
 import net.avacati.lib.sqlmapper.schema.DirectTableCreator.DbField2;
 import net.avacati.lib.sqlmapper.schema.DirectTableCreator.Table;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
@@ -10,11 +11,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class IndirectTableCreator {
-    private Map<Class, TypeMapConfig> map;
+    private TypeMap typeMap;
     private DirectTableCreator directTableCreator;
 
-    public IndirectTableCreator(Map<Class, TypeMapConfig> map, DirectTableCreator directTableCreator) {
-        this.map = map;
+    public IndirectTableCreator(TypeMap typeMap, DirectTableCreator directTableCreator) {
+        this.typeMap = typeMap;
         this.directTableCreator = directTableCreator;
     }
 
@@ -99,12 +100,12 @@ public class IndirectTableCreator {
         Class<?> type = field.getType();
 
         // Do we even support it?
-        if (!this.map.containsKey(type)) {
+        if (!this.typeMap.containsKey(type)) {
             throw new TypeNotSupportedException(type);
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.map.get(type);
+        TypeMapConfig typeMapConfig = this.typeMap.get(type);
 
         // The value of our field can be processed in three ways:
         // - as a reference to a single object that should be processed as a dbo
@@ -125,7 +126,7 @@ public class IndirectTableCreator {
             extraForeignKeyDbField.type = "varchar(max)";
 
             // Map the list to it's own table
-            Class erasedTypeOfList = this.map.get(parentDboClass).getErasedType(field.getName());
+            Class erasedTypeOfList = this.typeMap.get(parentDboClass).getErasedType(field.getName());
             // Helps intelliJ not trip over itself in trying to analyze the generics of the below stream.
             List<Table> insertSqlsForAllItemsInList = this.createCreateTableSqlsForClass(erasedTypeOfList, extraForeignKeyDbField);
 

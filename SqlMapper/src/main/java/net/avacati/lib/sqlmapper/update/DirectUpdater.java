@@ -1,6 +1,7 @@
 package net.avacati.lib.sqlmapper.update;
 
 import net.avacati.lib.sqlmapper.util.DbField;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
@@ -9,10 +10,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class DirectUpdater {
-    private Map<Class, TypeMapConfig> map;
+    private TypeMap typeMap;
 
-    public DirectUpdater(Map<Class, TypeMapConfig> map) {
-        this.map = map;
+    public DirectUpdater(TypeMap typeMap) {
+        this.typeMap = typeMap;
     }
 
     public Optional<String> createUpdateSqlForDirectlyMappableColumns(Object newDbo, Object oldDbo) {
@@ -41,7 +42,7 @@ public class DirectUpdater {
         }
 
         // Get typemapconfig
-        TypeMapConfig typeMapConfig = this.map.get(newDbo.getClass());
+        TypeMapConfig typeMapConfig = this.typeMap.get(newDbo.getClass());
 
         // Find the primary key value for the WHERE clause in the update.
         String id = typeMapConfig.getPrimaryKey(newDbo);
@@ -65,12 +66,12 @@ public class DirectUpdater {
         Class<?> type = field.getType();
 
         // Do we even support it?
-        if (!this.map.containsKey(type)) {
+        if (!this.typeMap.containsKey(type)) {
             throw new TypeNotSupportedException(type);
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.map.get(type);
+        TypeMapConfig typeMapConfig = this.typeMap.get(type);
 
         // Should we map it directly?
         if (typeMapConfig.shouldMapDirectlyToColumn()) {

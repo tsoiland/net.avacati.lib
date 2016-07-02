@@ -1,6 +1,7 @@
 package net.avacati.lib.sqlmapper.insert;
 
 import net.avacati.lib.sqlmapper.util.DbField;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
@@ -9,11 +10,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class IndirectInserter {
-    private Map<Class, TypeMapConfig> map;
+    private TypeMap typeMap;
     private DirectInserter directInserter;
 
-    public IndirectInserter(Map<Class, TypeMapConfig> map, DirectInserter directInserter) {
-        this.map = map;
+    public IndirectInserter(TypeMap typeMap, DirectInserter directInserter) {
+        this.typeMap = typeMap;
         this.directInserter = directInserter;
     }
 
@@ -58,12 +59,12 @@ public class IndirectInserter {
         Class<?> type = field.getType();
 
         // Do we even support it?
-        if (!this.map.containsKey(type)) {
+        if (!this.typeMap.containsKey(type)) {
             throw new TypeNotSupportedException(type);
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.map.get(type);
+        TypeMapConfig typeMapConfig = this.typeMap.get(type);
 
         // The value of our field can be processed in three ways:
         // - as a reference to a single object that should be processed as a dbo
@@ -87,7 +88,7 @@ public class IndirectInserter {
             // Create extra field for foreign key. (Only needed for lists)
             DbField extraForeignKeyDbField = new DbField();
             extraForeignKeyDbField.columnName = parentDbo.getClass().getSimpleName() + "_" + field.getName();
-            extraForeignKeyDbField.value = this.map.get(parentDbo.getClass()).getPrimaryKey(parentDbo);
+            extraForeignKeyDbField.value = this.typeMap.get(parentDbo.getClass()).getPrimaryKey(parentDbo);
 
             // Map the list to it's own table
             return this.createInsertSqlForEachObjectInList(list, extraForeignKeyDbField);

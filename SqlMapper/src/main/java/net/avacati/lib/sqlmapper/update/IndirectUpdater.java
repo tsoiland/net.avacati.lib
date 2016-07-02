@@ -1,6 +1,7 @@
 package net.avacati.lib.sqlmapper.update;
 
 import net.avacati.lib.sqlmapper.util.DbField;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 import net.avacati.lib.sqlmapper.insert.IndirectInserter;
@@ -12,12 +13,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class IndirectUpdater {
-    private Map<Class, TypeMapConfig> map;
+    private TypeMap typeMap;
     private DirectUpdater directUpdater;
     private IndirectInserter indirectInserter;
 
-    public IndirectUpdater(Map<Class, TypeMapConfig> map, DirectUpdater directUpdater, IndirectInserter indirectInserter) {
-        this.map = map;
+    public IndirectUpdater(TypeMap typeMap, DirectUpdater directUpdater, IndirectInserter indirectInserter) {
+        this.typeMap = typeMap;
         this.directUpdater = directUpdater;
         this.indirectInserter = indirectInserter;
     }
@@ -61,12 +62,12 @@ public class IndirectUpdater {
         Class<?> type = field.getType();
 
         // Do we even support it?
-        if (!this.map.containsKey(type)) {
+        if (!this.typeMap.containsKey(type)) {
             throw new TypeNotSupportedException(type);
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.map.get(type);
+        TypeMapConfig typeMapConfig = this.typeMap.get(type);
 
         // The value of our field can be processed in three ways:
         // - as a reference to a single object that should be processed as a dbo
@@ -94,7 +95,7 @@ public class IndirectUpdater {
             }
 
             // Determine the type of objects the list contains
-            TypeMapConfig typeMapConfigForParent = this.map.get(newParentDbo.getClass());
+            TypeMapConfig typeMapConfigForParent = this.typeMap.get(newParentDbo.getClass());
             Class erasedTypeOfList = typeMapConfigForParent.getErasedType(field.getName());
 
 
@@ -173,7 +174,7 @@ public class IndirectUpdater {
         // Find out which items are new, which have been removed, and which need to be checked for updates.
         Collection<?> newCollection = (Collection) newList;
         Collection<?> oldCollection = (Collection) oldList;
-        TypeMapConfig typeMapConfig = this.map.get(erasedTypeOfList);
+        TypeMapConfig typeMapConfig = this.typeMap.get(erasedTypeOfList);
         ListModificationStatements listModificationStatements = this.fullOuterJoin(
                 newCollection,
                 oldCollection,

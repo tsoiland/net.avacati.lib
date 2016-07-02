@@ -15,7 +15,7 @@ public class TypeMapConfig {
     private Function<Object, String> primaryKeyMapFunction;
     private Function<String, Object> reverseFunction;
     private String primaryKeyFieldName;
-    private Map<String,Class> erasedTypes;
+    private ErasedTypes erasedTypes;
     private boolean shouldEqualDirectly;
     private boolean shouldEqualUsingPK;
 
@@ -53,10 +53,10 @@ public class TypeMapConfig {
     }
 
     public static TypeMapConfig asDboToTable(String tableName, Function<Object, String> primayKeyMapFunction, String primaryKeyFieldName) {
-        return asDboToTable(tableName, primayKeyMapFunction, primaryKeyFieldName, new HashMap<>());
+        return asDboToTable(tableName, primayKeyMapFunction, primaryKeyFieldName, new ErasedTypes());
     }
 
-    public static TypeMapConfig asDboToTable(String tableName, Function<Object, String> primayKeyMapFunction, String primaryKeyFieldName, Map<String,Class> erasedTypes) {
+    public static TypeMapConfig asDboToTable(String tableName, Function<Object, String> primayKeyMapFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
         TypeMapConfig typeMapConfig = new TypeMapConfig();
         typeMapConfig.primaryKeyMapFunction = primayKeyMapFunction;
         typeMapConfig.directRowTableName = tableName;
@@ -75,10 +75,10 @@ public class TypeMapConfig {
     }
 
     public static TypeMapConfig asSubDbo(String tableName, Function<Object, String> foreignKeyFunction, String primaryKeyFieldName) {
-        return asSubDbo(tableName, foreignKeyFunction, primaryKeyFieldName, new HashMap<>());
+        return asSubDbo(tableName, foreignKeyFunction, primaryKeyFieldName, new ErasedTypes());
     }
 
-    public static TypeMapConfig asSubDbo(String tableName, Function<Object, String> primaryKeyFunction, String primaryKeyFieldName, Map<String,Class> erasedTypes) {
+    public static TypeMapConfig asSubDbo(String tableName, Function<Object, String> primaryKeyFunction, String primaryKeyFieldName, ErasedTypes erasedTypes) {
         TypeMapConfig typeMapConfig = new TypeMapConfig();
         typeMapConfig.directRowTableName = tableName;
         typeMapConfig.mappingFunction = primaryKeyFunction;
@@ -141,5 +141,18 @@ public class TypeMapConfig {
 
     public boolean shouldEqualUsingPK() {
         return this.shouldEqualUsingPK;
+    }
+
+    public static class ErasedTypes {
+        private final Map<String,Class> erasedTypes = new HashMap<>();
+
+        public ErasedTypes put(String fieldName, Class<?> erasedType) {
+            this.erasedTypes.put(fieldName, erasedType);
+            return this;
+        }
+
+        public Class<?> get(String fieldName) {
+            return this.erasedTypes.get(fieldName);
+        }
     }
 }

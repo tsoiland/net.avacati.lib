@@ -1,10 +1,9 @@
 package net.avacati.lib.sqlmapper;
 
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeMap;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig.ErasedTypes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class TestDboFactory {
@@ -34,36 +33,38 @@ public class TestDboFactory {
         return testDbo;
     }
 
-    public static Map<Class, TypeMapConfig> createTypeMap() {
-        Map<Class, TypeMapConfig> typemap = new HashMap<>();
-        TypeMapConfig.putStandardTypeConfigs(typemap);
+    public static TypeMap createTypeMap() {
+        TypeMap typeMap = new TypeMap();
+        typeMap.putStandardTypeConfigs();
 
-        Map<String, Class> erasedTypesFromTestDbo = new HashMap<>();
-        erasedTypesFromTestDbo.put("subTestDboList", TestDbo.ListItemTestDbo.class);
+        typeMap.asDboToTable(
+                TestDbo.class,
+                "test_table",
+                o -> ((TestDbo) o).uuidColumn.toString(),
+                "uuidColumn",
+                new ErasedTypes().put("subTestDboList", TestDbo.ListItemTestDbo.class));
 
-        typemap.put(TestDbo.class, TypeMapConfig.asDboToTable("test_table", o -> ((TestDbo) o).uuidColumn.toString(), "uuidColumn", erasedTypesFromTestDbo));
-
-
-        Map<String, Class> erasedTypesFromSubTestDbo = new HashMap<>();
-        erasedTypesFromSubTestDbo.put("subListItemTestDboList", TestDbo.SubListItemTestDbo.class);
-
-        typemap.put(TestDbo.SubTestDbo.class, TypeMapConfig.asSubDbo(
-                                                    "sub_test_table",
-                                                    o -> ((TestDbo.SubTestDbo) o).primaryKeyColumn.toString(),
-                                                    "primaryKeyColumn",
-                                                    erasedTypesFromSubTestDbo));
-        typemap.put(TestDbo.SubSubTestDbo.class, TypeMapConfig.asSubDbo(
-                                                    "sub_sub_test_table",
-                                                    o -> ((TestDbo.SubSubTestDbo) o).primaryKeyColumn.toString(),
-                                                    "primaryKeyColumn"));
-        typemap.put(TestDbo.ListItemTestDbo.class, TypeMapConfig.asSubDbo(
-                                                    "list_item_test_table",
-                                                    o -> ((TestDbo.ListItemTestDbo) o).primaryKeyColumn.toString(),
-                                                    "primaryKeyColumn"));
-        typemap.put(TestDbo.SubListItemTestDbo.class, TypeMapConfig.asSubDbo(
-                                                    "sub_list_item_test_table",
-                                                    o -> ((TestDbo.SubListItemTestDbo) o).primaryKeyColumn.toString(),
-                                                    "primaryKeyColumn"));
-        return typemap;
+        typeMap.asSubDbo(
+                TestDbo.SubTestDbo.class,
+                "sub_test_table",
+                o -> ((TestDbo.SubTestDbo) o).primaryKeyColumn.toString(),
+                "primaryKeyColumn",
+                new ErasedTypes().put("subListItemTestDboList", TestDbo.SubListItemTestDbo.class));
+        typeMap.asSubDbo(
+                TestDbo.SubSubTestDbo.class,
+                "sub_sub_test_table",
+                o -> ((TestDbo.SubSubTestDbo) o).primaryKeyColumn.toString(),
+                "primaryKeyColumn");
+        typeMap.asSubDbo(
+                TestDbo.ListItemTestDbo.class,
+                "list_item_test_table",
+                o -> ((TestDbo.ListItemTestDbo) o).primaryKeyColumn.toString(),
+                "primaryKeyColumn");
+        typeMap.asSubDbo(
+                TestDbo.SubListItemTestDbo.class,
+                "sub_list_item_test_table",
+                o -> ((TestDbo.SubListItemTestDbo) o).primaryKeyColumn.toString(),
+                "primaryKeyColumn");
+        return typeMap;
     }
 }

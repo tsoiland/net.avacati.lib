@@ -1,5 +1,6 @@
 package net.avacati.lib.sqlmapper.schema;
 
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
@@ -8,10 +9,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class DirectTableCreator {
-    private Map<Class, TypeMapConfig> map;
+    private TypeMap typeMap;
 
-    public DirectTableCreator(Map<Class, TypeMapConfig> map) {
-        this.map = map;
+    public DirectTableCreator(TypeMap typeMap) {
+        this.typeMap = typeMap;
     }
 
     public Table createCreateTableScript(Class dboClass, DbField2... extraFields) {
@@ -27,7 +28,7 @@ public class DirectTableCreator {
         Collections.addAll(dbFields, extraFields);
 
         // Render sql
-        String tableName = this.map.get(dboClass).getTableNameForDbo();
+        String tableName = this.typeMap.get(dboClass).getTableNameForDbo();
 
         return new Table(dboClass, tableName, dbFields);
     }
@@ -37,12 +38,12 @@ public class DirectTableCreator {
         Class<?> type = field.getType();
 
         // Do we even support it?
-        if (!this.map.containsKey(type)) {
+        if (!this.typeMap.containsKey(type)) {
             throw new TypeNotSupportedException(type);
         }
 
         // Get the map config for this type.
-        TypeMapConfig typeMapConfig = this.map.get(type);
+        TypeMapConfig typeMapConfig = this.typeMap.get(type);
 
         // Should we map it directly?
         if (typeMapConfig.shouldMapDirectlyToColumn()) {

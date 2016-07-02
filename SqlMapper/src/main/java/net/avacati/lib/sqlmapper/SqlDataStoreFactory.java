@@ -9,15 +9,14 @@ import net.avacati.lib.sqlmapper.select.DirectSelecter;
 import net.avacati.lib.sqlmapper.update.DirectUpdater;
 import net.avacati.lib.sqlmapper.update.IndirectUpdater;
 import net.avacati.lib.sqlmapper.util.SqlDoerH2;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 
 import java.sql.Connection;
-import java.util.Map;
 
 public class SqlDataStoreFactory {
-    private Map<Class, TypeMapConfig> typeConfigMap;
+    private TypeMap typeConfigMap;
 
-    public SqlDataStoreFactory(Map<Class, TypeMapConfig> typeConfigMap) {
+    public SqlDataStoreFactory(TypeMap typeConfigMap) {
         this.typeConfigMap = typeConfigMap;
     }
 

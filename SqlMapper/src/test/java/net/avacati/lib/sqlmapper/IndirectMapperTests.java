@@ -2,28 +2,28 @@ package net.avacati.lib.sqlmapper;
 
 import net.avacati.lib.sqlmapper.insert.DirectInserter;
 import net.avacati.lib.sqlmapper.insert.IndirectInserter;
-import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeMap;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class IndirectMapperTests {
     @Test
     public void AllTypesDbo() {
         // Setup type mapping
-        Map<Class, TypeMapConfig> map = new HashMap<>();
-        map.put(UUID.class, TypeMapConfig.directToString(UUID::fromString));
-
-        map.put(List.class, TypeMapConfig.asList());
-
-        map.put(TestDbo.class, TypeMapConfig.asDboToTable("test_table", o -> ((TestDbo) o).uuidColumn.toString(), "uuidColumn"));
-        map.put(SubTestDbo.class, TypeMapConfig.asSubDbo("sub_test_table", o -> ((SubTestDbo) o).primaryKeyColumn.toString(), "not used"));
-        map.put(SubSubTestDbo.class, TypeMapConfig.asSubDbo("sub_sub_test_table", o -> ((SubSubTestDbo) o).primaryKeyColumn.toString(), "not used"));
-        map.put(ListItemTestDbo.class, TypeMapConfig.asSubDbo("list_item_test_table", o -> ((ListItemTestDbo) o).primaryKeyColumn.toString(), "not used"));
+        TypeMap typeMap = new TypeMap();
+        typeMap.putStandardTypeConfigs();
+        typeMap.asList(List.class);
+        typeMap.asDboToTable(TestDbo.class, "test_table", o -> ((TestDbo) o).uuidColumn.toString(), "uuidColumn");
+        typeMap.asSubDbo(SubTestDbo.class, "sub_test_table", o -> ((SubTestDbo) o).primaryKeyColumn.toString(), "not used");
+        typeMap.asSubDbo(SubSubTestDbo.class, "sub_sub_test_table", o -> ((SubSubTestDbo) o).primaryKeyColumn.toString(), "not used");
+        typeMap.asSubDbo(ListItemTestDbo.class, "list_item_test_table", o -> ((ListItemTestDbo) o).primaryKeyColumn.toString(), "not used");
 
         // Arrange SUT
-        IndirectInserter directMapper = new IndirectInserter(map, new DirectInserter(map));
+        IndirectInserter directMapper = new IndirectInserter(typeMap, new DirectInserter(typeMap));
 
         // Arrange test values
         TestDbo testDbo = new TestDbo();
