@@ -9,7 +9,7 @@ import net.avacati.lib.sqlmapper.select.DirectSelecter;
 import net.avacati.lib.sqlmapper.update.DirectUpdater;
 import net.avacati.lib.sqlmapper.update.IndirectUpdater;
 import net.avacati.lib.sqlmapper.util.SqlDoer;
-import net.avacati.lib.sqlmapper.util.TypeMap;
+import net.avacati.lib.sqlmapper.typeconfig.TypeMap;
 
 import java.sql.Connection;
 

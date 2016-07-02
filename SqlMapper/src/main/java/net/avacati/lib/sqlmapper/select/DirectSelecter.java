@@ -1,5 +1,7 @@
 package net.avacati.lib.sqlmapper.select;
 
+import net.avacati.lib.sqlmapper.typeconfig.TypeConfig;
+import net.avacati.lib.sqlmapper.typeconfig.TypeMap;
 import net.avacati.lib.sqlmapper.util.*;
 
 import java.lang.reflect.Field;
@@ -17,11 +19,6 @@ public class DirectSelecter {
     }
 
     public <Dbo> Optional<Dbo> getDbo(Class<Dbo> type, String id) {
-        // Do we even support the type?
-        if (!this.typeMap.containsKey(type)) {
-            throw new TypeNotSupportedException(type);
-        }
-
         // Get the config
         TypeConfig typeConfig = this.typeMap.get(type);
 
@@ -72,11 +69,6 @@ public class DirectSelecter {
 
     private void populateDboFieldFromResultSet(Object dbo, Field field, ResultSet resultSet) {
         try {
-            // Do we even support the type?
-            if (!this.typeMap.containsKey(field.getType())) {
-                throw new TypeNotSupportedException(field.getType());
-            }
-
             // Get the type config
             TypeConfig typeConfig = this.typeMap.get(field.getType());
 

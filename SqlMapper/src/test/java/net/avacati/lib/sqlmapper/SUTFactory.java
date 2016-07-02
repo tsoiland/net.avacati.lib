@@ -1,6 +1,6 @@
 package net.avacati.lib.sqlmapper;
 
-import net.avacati.lib.sqlmapper.util.TypeMap;
+import net.avacati.lib.sqlmapper.typeconfig.TypeMap;
 import org.h2.jdbcx.JdbcDataSource;
 
 import java.sql.Connection;

@@ -1,8 +1,7 @@
 package net.avacati.lib.sqlmapper.schema;
 
-import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeConfig;
-import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
+import net.avacati.lib.sqlmapper.typeconfig.TypeMap;
+import net.avacati.lib.sqlmapper.typeconfig.TypeConfig;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -36,11 +35,6 @@ public class DirectTableCreator {
     private Optional<DbField2> findColumnNameAndDataTypeForField(Field field) {
         // What type are we trying to map?
         Class<?> type = field.getType();
-
-        // Do we even support it?
-        if (!this.typeMap.containsKey(type)) {
-            throw new TypeNotSupportedException(type);
-        }
 
         // Get the map config for this type.
         TypeConfig typeConfig = this.typeMap.get(type);

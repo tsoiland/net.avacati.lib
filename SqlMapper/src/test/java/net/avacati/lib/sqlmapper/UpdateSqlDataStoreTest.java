@@ -1,7 +1,7 @@
 package net.avacati.lib.sqlmapper;
 
 import net.avacati.lib.sqlmapper.TestDbo.ListItemTestDbo;
-import net.avacati.lib.sqlmapper.util.TypeMap;
+import net.avacati.lib.sqlmapper.typeconfig.TypeMap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

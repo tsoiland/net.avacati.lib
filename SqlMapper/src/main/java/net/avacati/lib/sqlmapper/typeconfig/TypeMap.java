@@ -1,6 +1,6 @@
-package net.avacati.lib.sqlmapper.util;
+package net.avacati.lib.sqlmapper.typeconfig;
 
-import net.avacati.lib.sqlmapper.util.TypeConfig.ErasedTypes;
+import net.avacati.lib.sqlmapper.typeconfig.TypeConfig.ErasedTypes;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -24,6 +24,11 @@ public class TypeMap {
     }
 
     public TypeConfig get(Class<?> dboClass) {
+        // Do we even support it?
+        if (!this.map.containsKey(dboClass)) {
+            throw new TypeNotSupportedException(dboClass);
+        }
+
         return this.map.get(dboClass);
     }
 

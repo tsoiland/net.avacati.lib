@@ -2,9 +2,8 @@ package net.avacati.lib.sqlmapper.schema;
 
 import net.avacati.lib.sqlmapper.schema.DirectTableCreator.DbField2;
 import net.avacati.lib.sqlmapper.schema.DirectTableCreator.Table;
-import net.avacati.lib.sqlmapper.util.TypeMap;
-import net.avacati.lib.sqlmapper.util.TypeConfig;
-import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
+import net.avacati.lib.sqlmapper.typeconfig.TypeConfig;
+import net.avacati.lib.sqlmapper.typeconfig.TypeMap;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -98,11 +97,6 @@ public class IndirectTableCreator {
     private Optional<List<Table>> createCreateTableSqlForSubDbo(Field field, Class parentDboClass) {
         // What type are we trying to map?
         Class<?> type = field.getType();
-
-        // Do we even support it?
-        if (!this.typeMap.containsKey(type)) {
-            throw new TypeNotSupportedException(type);
-        }
 
         // Get the map config for this type.
         TypeConfig typeConfig = this.typeMap.get(type);

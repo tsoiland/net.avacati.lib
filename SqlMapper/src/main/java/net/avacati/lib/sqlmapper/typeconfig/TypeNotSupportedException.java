@@ -1,7 +1,7 @@
-package net.avacati.lib.sqlmapper.util;
+package net.avacati.lib.sqlmapper.typeconfig;
 
 public class TypeNotSupportedException extends RuntimeException{
-    public TypeNotSupportedException(Class<?> type) {
+    TypeNotSupportedException(Class<?> type) {
         super("No type mapping for: " + type.toString());
     }
 }

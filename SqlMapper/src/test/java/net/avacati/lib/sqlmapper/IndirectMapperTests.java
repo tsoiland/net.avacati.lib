@@ -2,7 +2,7 @@ package net.avacati.lib.sqlmapper;
 
 import net.avacati.lib.sqlmapper.insert.DirectInserter;
 import net.avacati.lib.sqlmapper.insert.IndirectInserter;
-import net.avacati.lib.sqlmapper.util.TypeMap;
+import net.avacati.lib.sqlmapper.typeconfig.TypeMap;
 import org.junit.Assert;
 import org.junit.Test;
 
