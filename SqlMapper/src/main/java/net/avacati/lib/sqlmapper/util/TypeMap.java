@@ -6,8 +6,10 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TypeMap {
     private final Map<Class, TypeConfig> map = new HashMap<>();
@@ -63,5 +65,13 @@ public class TypeMap {
 
     public <Dbo> boolean containsKey(Class<Dbo> type) {
         return this.map.containsKey(type);
+    }
+
+    public List<Class> getRootDboClasses() {
+        return this.map.entrySet()
+                .stream()
+                .filter(classTypeConfigEntry -> classTypeConfigEntry.getValue().isRootDbo())
+                .map(Entry::getKey)
+                .collect(Collectors.toList());
     }
 }

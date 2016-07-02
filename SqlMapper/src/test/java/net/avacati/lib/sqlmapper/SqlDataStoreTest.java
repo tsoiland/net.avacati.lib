@@ -11,7 +11,7 @@ public class SqlDataStoreTest {
         TypeMap typeMap = TestDboFactory.createTypeMap();
 
         // Arrange SUT
-        SqlDataStore sqlDataStore = SUTFactory.createSqlDataStore(typeMap, TestDbo.class);
+        SqlDataStore sqlDataStore = SUTFactory.createSqlDataStore(typeMap);
 
         // Arrange data
         // Arrange testDbo

@@ -46,11 +46,15 @@ public class SqlDataStoreFactory {
                 indirectUpdater);
     }
 
-    public void createSchema(Class<?> dboType, Connection connection) {
-        final IndirectTableCreator indirectTableCreator = new IndirectTableCreator(
-                this.typeConfigMap,
-                new DirectTableCreator(this.typeConfigMap));
-        final TableCreator tableCreator = new TableCreator(indirectTableCreator, new SqlDoerH2(connection));
-        tableCreator.createTableFor(dboType);
+    public void createSchema(Connection connection) {
+        // Table Creator
+        final TableCreator tableCreator = new TableCreator(
+                new IndirectTableCreator(this.typeConfigMap,
+                        new DirectTableCreator(this.typeConfigMap)),
+                new SqlDoerH2(connection));
+
+        // Create schema for all Root entites (creator will recurse)
+        this.typeConfigMap.getRootDboClasses()
+                          .forEach(tableCreator::createTableFor);
     }
 }

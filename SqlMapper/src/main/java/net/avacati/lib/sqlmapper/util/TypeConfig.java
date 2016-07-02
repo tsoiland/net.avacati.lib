@@ -18,6 +18,7 @@ public class TypeConfig {
     private ErasedTypes erasedTypes;
     private boolean shouldEqualDirectly;
     private boolean shouldEqualUsingPK;
+    private boolean isRootDbo;
 
     private TypeConfig() {
 
@@ -67,6 +68,7 @@ public class TypeConfig {
         typeConfig.erasedTypes = erasedTypes;
         typeConfig.shouldEqualDirectly = false;
         typeConfig.shouldEqualUsingPK = true;
+        typeConfig.isRootDbo = true;
         return typeConfig;
     }
 
@@ -141,6 +143,10 @@ public class TypeConfig {
 
     public boolean shouldEqualUsingPK() {
         return this.shouldEqualUsingPK;
+    }
+
+    public boolean isRootDbo() {
+        return this.isRootDbo;
     }
 
     public static class ErasedTypes {

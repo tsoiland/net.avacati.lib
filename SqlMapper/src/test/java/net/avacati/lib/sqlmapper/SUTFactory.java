@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class SUTFactory {
-    public static SqlDataStore createSqlDataStore(TypeMap typemap, Class<?> dboType) {
+    public static SqlDataStore createSqlDataStore(TypeMap typemap) {
         // H2 datasource
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL("jdbc:h2:mem:");
@@ -22,7 +22,7 @@ public class SUTFactory {
 
         // SqlDataStore
         SqlDataStoreFactory sqlDataStoreFactory = new SqlDataStoreFactory(typemap);
-        sqlDataStoreFactory.createSchema(dboType, connection);
+        sqlDataStoreFactory.createSchema(connection);
         return sqlDataStoreFactory.createSqlDataStore(connection);
     }
 }

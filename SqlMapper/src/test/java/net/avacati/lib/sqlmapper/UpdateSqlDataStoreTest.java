@@ -21,7 +21,7 @@ public class UpdateSqlDataStoreTest {
         TypeMap typemap = TestDboFactory.createTypeMap();
 
         // Arrange SUT
-        this.sqlDataStore = SUTFactory.createSqlDataStore(typemap, TestDbo.class);
+        this.sqlDataStore = SUTFactory.createSqlDataStore(typemap);
 
         // Arrange data
         this.originalTestDbo = TestDboFactory.createTestDbo();
