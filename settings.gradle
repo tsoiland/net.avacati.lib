@@ -4,5 +4,4 @@ include 'Jetty'
 include 'Mvc'
 include 'AggregateRepository'
 include 'SerializingDataStore'
-include 'SqlMapper'
 
