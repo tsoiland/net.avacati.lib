@@ -1,6 +1,9 @@
 package net.avacati.lib.sqlmapper;
 
 import net.avacati.lib.sqlmapper.DirectMapperTests.DirectTestDbo.TestEnum;
+import net.avacati.lib.sqlmapper.insert.DirectInserter;
+import net.avacati.lib.sqlmapper.util.DbField;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,7 +23,7 @@ public class DirectMapperTests {
         map.put(DirectSubTestDbo.class, TypeMapConfig.asSubDbo("sub_test_table", o -> ((DirectSubTestDbo) o).primaryKeyColumn.toString(), "not used"));
 
         // Arrange SUT
-        DirectMapper directMapper = new DirectMapper(map);
+        DirectInserter directInserter = new DirectInserter(map);
 
         // Arrange test values
         DirectTestDbo directTestDbo = new DirectTestDbo();
@@ -37,7 +40,7 @@ public class DirectMapperTests {
         DbField extraFields = new DbField();
         extraFields.columnName = "extraColumnName";
         extraFields.value = "extraValue";
-        String sql = directMapper.createInsertSqlForDirectlyMappableColumns(directTestDbo, extraFields);
+        String sql = directInserter.createInsertSqlForDirectlyMappableColumns(directTestDbo, extraFields);
 
         // Assert
         String expected =

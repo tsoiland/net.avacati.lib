@@ -1,5 +1,15 @@
 package net.avacati.lib.sqlmapper;
 
+import net.avacati.lib.sqlmapper.insert.DirectInserter;
+import net.avacati.lib.sqlmapper.insert.IndirectInserter;
+import net.avacati.lib.sqlmapper.schema.DirectTableCreator;
+import net.avacati.lib.sqlmapper.schema.IndirectTableCreator;
+import net.avacati.lib.sqlmapper.schema.TableCreator;
+import net.avacati.lib.sqlmapper.select.DirectSelecter;
+import net.avacati.lib.sqlmapper.update.DirectUpdater;
+import net.avacati.lib.sqlmapper.update.IndirectUpdater;
+import net.avacati.lib.sqlmapper.util.SqlDoerH2;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,13 +44,13 @@ public class SqlDataStoreMultipleFieldsOfSameTypeTest {
         tableCreator.createTableFor(TestDbo.class);
 
         // Arrange SUT
-        IndirectMapper indirectMapper = new IndirectMapper(typemap, new DirectMapper(typemap));
+        IndirectInserter indirectInserter = new IndirectInserter(typemap, new DirectInserter(typemap));
         SqlDataStore<TestDbo> sqlDataStore = new SqlDataStore<>(
-                indirectMapper,
+                indirectInserter,
                 sqlDoerH2,
                 new DirectSelecter(typemap, sqlDoerH2),
                 TestDbo.class,
-                new IndirectUpdater(typemap, new DirectUpdater(typemap), indirectMapper));
+                new IndirectUpdater(typemap, new DirectUpdater(typemap), indirectInserter));
 
         // Arrange data
         // Arrange testDbo

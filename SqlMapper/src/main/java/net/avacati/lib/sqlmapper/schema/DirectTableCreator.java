@@ -1,10 +1,13 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.schema;
+
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class DirectTableCreator {
+public class DirectTableCreator {
     private Map<Class, TypeMapConfig> map;
 
     public DirectTableCreator(Map<Class, TypeMapConfig> map) {

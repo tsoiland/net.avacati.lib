@@ -1,6 +1,6 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.util;
 
-class DbField {
+public class DbField {
     public String columnName;
     public String value;
 

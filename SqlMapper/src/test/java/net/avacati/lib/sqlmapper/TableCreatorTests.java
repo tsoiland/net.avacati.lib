@@ -1,5 +1,8 @@
 package net.avacati.lib.sqlmapper;
 
+import net.avacati.lib.sqlmapper.schema.DirectTableCreator;
+import net.avacati.lib.sqlmapper.schema.IndirectTableCreator;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import org.junit.Assert;
 import org.junit.Test;
 

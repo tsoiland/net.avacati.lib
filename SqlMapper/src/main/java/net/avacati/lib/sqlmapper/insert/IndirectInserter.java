@@ -1,16 +1,20 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.insert;
+
+import net.avacati.lib.sqlmapper.util.DbField;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class IndirectMapper {
+public class IndirectInserter {
     private Map<Class, TypeMapConfig> map;
-    private DirectMapper directMapper;
+    private DirectInserter directInserter;
 
-    public IndirectMapper(Map<Class, TypeMapConfig> map, DirectMapper directMapper) {
+    public IndirectInserter(Map<Class, TypeMapConfig> map, DirectInserter directInserter) {
         this.map = map;
-        this.directMapper = directMapper;
+        this.directInserter = directInserter;
     }
 
     public List<String> createInsertSqlsForObjectTree(Object dbo) {
@@ -27,7 +31,7 @@ class IndirectMapper {
         List<String> sql = new ArrayList<>();
 
         // Map the root directly to table
-        sql.add(this.directMapper.createInsertSqlForDirectlyMappableColumns(dbo, extraFields));
+        sql.add(this.directInserter.createInsertSqlForDirectlyMappableColumns(dbo, extraFields));
 
         // Go through all of the fields and see if any of them should be indirectly mapped.
         sql.addAll(

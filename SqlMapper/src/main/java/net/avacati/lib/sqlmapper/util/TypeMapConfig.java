@@ -1,4 +1,4 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.util;
 
 import java.time.Instant;
 import java.util.*;

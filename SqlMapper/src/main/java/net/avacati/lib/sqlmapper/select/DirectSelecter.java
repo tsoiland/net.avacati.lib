@@ -1,11 +1,16 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.select;
+
+import net.avacati.lib.sqlmapper.util.DbField;
+import net.avacati.lib.sqlmapper.util.SqlDoer;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-class DirectSelecter {
+public class DirectSelecter {
     private Map<Class, TypeMapConfig> map;
     private SqlDoer sqlDoer;
 
@@ -21,16 +26,16 @@ class DirectSelecter {
         }
 
         // Get the config
-        TypeMapConfig typeMapConfig = map.get(type);
+        TypeMapConfig typeMapConfig = this.map.get(type);
 
         // Define sql
         String sql = "SELECT * FROM " + typeMapConfig.getTableNameForDbo() + " WHERE " + typeMapConfig.getPrimaryKeyFieldName() + "='" + id + "'";
 
         // Execute query
-        ResultSet resultSet = sqlDoer.doSql2(sql);
+        ResultSet resultSet = this.sqlDoer.doSql2(sql);
 
         // Map result set to dbos
-        List<Dbo> dbos = mapResultSetToDbo(type, resultSet);
+        List<Dbo> dbos = this.mapResultSetToDbo(type, resultSet);
 
         // There is just supposed to be one or zero.
         if (dbos.size() == 0) {
@@ -53,7 +58,7 @@ class DirectSelecter {
                     // Populate fields from result set
                     Arrays
                         .stream(dbo.getClass().getFields())
-                        .forEach(field -> populateDboFieldFromResultSet(dbo, field, resultSet));
+                        .forEach(field -> this.populateDboFieldFromResultSet(dbo, field, resultSet));
 
                     dbos.add(dbo);
 
@@ -76,7 +81,7 @@ class DirectSelecter {
             }
 
             // Get the type config
-            TypeMapConfig typeMapConfig = map.get(field.getType());
+            TypeMapConfig typeMapConfig = this.map.get(field.getType());
 
             // The value of our field can be processed in three ways:
             // - directly from a column in the resultset.
@@ -112,7 +117,7 @@ class DirectSelecter {
 
             } else if (typeMapConfig.shouldTreatAsList()) {
                 // Get the type map config for the parent dbo we're working on. That is, the one that has the list field on it.
-                TypeMapConfig typeMapConfigForDbo = map.get(dbo.getClass());
+                TypeMapConfig typeMapConfigForDbo = this.map.get(dbo.getClass());
 
                 // Determine value of foreign key to query for
                 final String fkColumnName = dbo.getClass().getSimpleName() + "_" + field.getName();
@@ -121,9 +126,9 @@ class DirectSelecter {
 
                 Class<?> erasedType = typeMapConfigForDbo.getErasedType(field.getName());
 
-                TypeMapConfig tm2 = map.get(erasedType);
+                TypeMapConfig tm2 = this.map.get(erasedType);
                 // Query for sub dbos
-                List<Object> subDbos = querySubDbos(erasedType, tm2.getTableNameForDbo(), foreignKeyToQuery);
+                List<Object> subDbos = this.querySubDbos(erasedType, tm2.getTableNameForDbo(), foreignKeyToQuery);
 
                 // Assign list of sub dbos
                 field.set(dbo, subDbos);

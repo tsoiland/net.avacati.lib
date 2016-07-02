@@ -1,6 +1,8 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.schema;
 
-class TableCreator {
+import net.avacati.lib.sqlmapper.util.SqlDoerH2;
+
+public class TableCreator {
     private IndirectTableCreator indirectTableCreator;
     private SqlDoerH2 sqlDoer;
 

@@ -1,4 +1,4 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.util;
 
 import org.h2.jdbcx.JdbcDataSource;
 
@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-class SqlDoerH2 implements SqlDoer {
+public class SqlDoerH2 implements SqlDoer {
     private Connection connection;
 
     public SqlDoerH2(Connection connection) {

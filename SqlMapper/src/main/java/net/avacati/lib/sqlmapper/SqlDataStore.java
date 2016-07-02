@@ -1,20 +1,24 @@
 package net.avacati.lib.sqlmapper;
 
 import net.avacati.lib.aggregaterepository.DataStore;
+import net.avacati.lib.sqlmapper.insert.IndirectInserter;
+import net.avacati.lib.sqlmapper.select.DirectSelecter;
+import net.avacati.lib.sqlmapper.update.IndirectUpdater;
+import net.avacati.lib.sqlmapper.util.SqlDoer;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 class SqlDataStore<T> implements DataStore<T> {
-    private IndirectMapper indirectMapper;
+    private IndirectInserter indirectInserter;
     private SqlDoer sqlDoer;
     private DirectSelecter directSelecter;
     private Class<T> dboType;
     private IndirectUpdater indirectUpdater;
 
-    public SqlDataStore(IndirectMapper indirectMapper, SqlDoer sqlDoer, DirectSelecter directSelecter, Class<T> dboType, IndirectUpdater indirectUpdater) {
-        this.indirectMapper = indirectMapper;
+    public SqlDataStore(IndirectInserter indirectInserter, SqlDoer sqlDoer, DirectSelecter directSelecter, Class<T> dboType, IndirectUpdater indirectUpdater) {
+        this.indirectInserter = indirectInserter;
         this.sqlDoer = sqlDoer;
         this.directSelecter = directSelecter;
         this.dboType = dboType;
@@ -23,7 +27,7 @@ class SqlDataStore<T> implements DataStore<T> {
 
     @Override
     public void insert(UUID id, T r) {
-        List<String> sqls = this.indirectMapper.createInsertSqlsForObjectTree(r);
+        List<String> sqls = this.indirectInserter.createInsertSqlsForObjectTree(r);
         sqls.stream().forEach(this.sqlDoer::doSql);
     }
 

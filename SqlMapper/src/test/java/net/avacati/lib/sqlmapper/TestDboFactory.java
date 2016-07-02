@@ -1,5 +1,7 @@
 package net.avacati.lib.sqlmapper;
 
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

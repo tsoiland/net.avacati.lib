@@ -1,5 +1,8 @@
 package net.avacati.lib.sqlmapper;
 
+import net.avacati.lib.sqlmapper.insert.DirectInserter;
+import net.avacati.lib.sqlmapper.insert.IndirectInserter;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,7 +23,7 @@ public class IndirectMapperTests {
         map.put(ListItemTestDbo.class, TypeMapConfig.asSubDbo("list_item_test_table", o -> ((ListItemTestDbo) o).primaryKeyColumn.toString(), "not used"));
 
         // Arrange SUT
-        IndirectMapper directMapper = new IndirectMapper(map, new DirectMapper(map));
+        IndirectInserter directMapper = new IndirectInserter(map, new DirectInserter(map));
 
         // Arrange test values
         TestDbo testDbo = new TestDbo();

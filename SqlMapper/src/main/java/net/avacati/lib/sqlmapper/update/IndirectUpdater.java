@@ -1,4 +1,9 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.update;
+
+import net.avacati.lib.sqlmapper.util.DbField;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
+import net.avacati.lib.sqlmapper.insert.IndirectInserter;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -6,15 +11,15 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class IndirectUpdater {
+public class IndirectUpdater {
     private Map<Class, TypeMapConfig> map;
     private DirectUpdater directUpdater;
-    private IndirectMapper indirectMapper;
+    private IndirectInserter indirectInserter;
 
-    public IndirectUpdater(Map<Class, TypeMapConfig> map, DirectUpdater directUpdater, IndirectMapper indirectMapper) {
+    public IndirectUpdater(Map<Class, TypeMapConfig> map, DirectUpdater directUpdater, IndirectInserter indirectInserter) {
         this.map = map;
         this.directUpdater = directUpdater;
-        this.indirectMapper = indirectMapper;
+        this.indirectInserter = indirectInserter;
     }
 
     /**
@@ -114,7 +119,7 @@ class IndirectUpdater {
             } else {
                 // If it was null, but has value now, we need to insert a row.
                 // RECURSE to INSERT util.
-                final List<String> insertSqlsForObjectTree = this.indirectMapper.createInsertSqlsForObjectTree(newSubDbo);
+                final List<String> insertSqlsForObjectTree = this.indirectInserter.createInsertSqlsForObjectTree(newSubDbo);
                 return Optional.of(insertSqlsForObjectTree);
             }
         } else {
@@ -143,7 +148,7 @@ class IndirectUpdater {
                     // The current sub dbo is not the same as before. We prefer to delete the old and insert the new over updating the id.
 
                     // Insert the new
-                    List<String> insertSqlsForObjectTree = this.indirectMapper.createInsertSqlsForObjectTree(newSubDbo);
+                    List<String> insertSqlsForObjectTree = this.indirectInserter.createInsertSqlsForObjectTree(newSubDbo);
 
                     // Delete the old
                     // TODO
@@ -178,7 +183,7 @@ class IndirectUpdater {
         Stream<String> insertSqlsForAllItemsInList =
                 listModificationStatements.inserts
                 .stream()
-                .map((dbo) -> this.indirectMapper.createInsertSqlsForObjectTree(dbo, extraForeignKeyDbField))
+                .map((dbo) -> this.indirectInserter.createInsertSqlsForObjectTree(dbo, extraForeignKeyDbField))
                 .flatMap(Collection::stream);
 
         // Handle removed items

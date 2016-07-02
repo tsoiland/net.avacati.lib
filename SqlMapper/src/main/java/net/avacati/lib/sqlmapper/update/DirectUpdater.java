@@ -1,10 +1,14 @@
-package net.avacati.lib.sqlmapper;
+package net.avacati.lib.sqlmapper.update;
+
+import net.avacati.lib.sqlmapper.util.DbField;
+import net.avacati.lib.sqlmapper.util.TypeMapConfig;
+import net.avacati.lib.sqlmapper.util.TypeNotSupportedException;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class DirectUpdater {
+public class DirectUpdater {
     private Map<Class, TypeMapConfig> map;
 
     public DirectUpdater(Map<Class, TypeMapConfig> map) {
